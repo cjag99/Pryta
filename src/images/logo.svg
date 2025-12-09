@@ -1,0 +1,10 @@
+ <svg xmlns="http://www.w3.org/2000/svg" viewBox="-503 -503 1006 1006" width="75" height="75">
+                                <defs>
+                                    <linearGradient id="prytaGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#6A00FF" />
+                                        <stop offset="100%" stop-color="#FF2DD1" />
+                                    </linearGradient>
+                                </defs>
+                                
+                                <path d="M 0 -500 L -500 500 L 500 500 Z M -5 499 L -240 21 L 240 21 Z" stroke="url(#prytaGradient)" stroke-width="70" fill="none"/>
+                            </svg>
