@@ -101,7 +101,7 @@ class ValidationService{
     /**
      * Valida el nombre de usuario según las reglas simples definidas.
      *
-     * Actualmente solo comprueba la longitud (8-15 caracteres). Considerar validar
+     * Actualmente solo comprueba la longitud (6-15 caracteres). Considerar validar
      * caracteres permitidos (letras, números, guiones) según política.
      *
      * @param string $username
@@ -109,8 +109,8 @@ class ValidationService{
      */
     public static function validateUserName($username){
         $errors = [];
-        if(strlen($username)< 8 || strlen($username)>15){
-            $errors[] = "El nombre de usuario debe contener entre 8 y 15 caracteres";
+        if(strlen($username)< 6 || strlen($username)>15){
+            $errors[] = "El nombre de usuario debe contener entre 6 y 15 caracteres";
         }
         return [
             'valid' => empty($errors),

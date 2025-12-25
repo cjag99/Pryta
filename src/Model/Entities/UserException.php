@@ -9,9 +9,6 @@
  * NOTA: `getMessage()` puede contener información técnica; en entornos de producción
  * conviene devolver un mensaje genérico al usuario y registrar la información
  * técnica en logs para no filtrar datos sensibles.
- *
- * TODO: Considerar añadir un campo 'context' o método de logging para facilitar el
- * diagnóstico sin exponer detalles al usuario final.
  */
 class UserException extends Exception{
 
@@ -24,5 +21,5 @@ class UserException extends Exception{
         return $this->getMessage();
     }
 
-    // Opcional: implementar __toString() o métodos adicionales para facilitar el logging.
+    // Opcional: implementar __toString() o métodos adicionales para facilitar el registro (logs).
 }
