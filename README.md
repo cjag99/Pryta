@@ -1,3 +1,8 @@
+<p align="center">
+  <img src="./public/images/logo.svg" alt="Pryta">
+</p>
+
+
 # Pryta
 
 [![PHP](https://img.shields.io/badge/PHP-8.2-blue.svg)](https://www.php.net/) 
