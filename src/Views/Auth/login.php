@@ -97,7 +97,7 @@
 
                 <!-- Columna de imagen (oculta en pantallas pequeñas) -->
                 <div class="d-none d-md-block col-md-5 order-1 order-md-2 p-0 h-100">
-                    <img src="public/images/ejemplo.jpg" alt="" class="img-fluid w-100 h-100">
+                    <img src="public/images/portada.png" alt="" class="img-fluid w-100 h-100 mt-5">
                 </div>
             </div>
         </div>
