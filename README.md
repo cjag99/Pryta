@@ -74,7 +74,7 @@ Actualmente, **Pryta** incluye:
 
 ---
 
-##Imágenes
+## Imágenes
 
 <table>
   <tr>
@@ -93,6 +93,7 @@ Actualmente, **Pryta** incluye:
   </tr>
 </table>
 
+---
 
 ## Seguridad
 
