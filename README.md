@@ -74,6 +74,26 @@ Actualmente, **Pryta** incluye:
 
 ---
 
+##Imágenes
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="./public/images/login.jpg" width="100"/><br>
+      login.php
+    </td>
+    <td align="center">
+      <img src="./public/images/home.jpg" width="100"/><br>
+      home.php
+    </td>
+    <td align="center">
+      <img src="./public/images/register.jpg" width="100"/><br>
+      register.php
+    </td>
+  </tr>
+</table>
+
+
 ## Seguridad
 
 **Pryta** implementa medidas de seguridad fundamentales:
