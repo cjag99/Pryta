@@ -1,6 +1,6 @@
 <?php
-require_once "./UserRole.php";
-require_once "./UserException.php";
+require_once "./src/Model/Entities/UserRole.php";
+require_once "./src/Model/Entities/UserException.php";
 
 /**
  * Representa un usuario en la aplicación.
@@ -8,7 +8,6 @@ require_once "./UserException.php";
  * Propiedades principales:
  * - id, username, name, surname, email, passwd
  * - role: texto del rol (usar UserRole::X->value)
- * - failedTries: intentos fallidos de acceso
  * - verified / active: flags de estado
  *
  * Notas de seguridad:
@@ -16,7 +15,6 @@ require_once "./UserException.php";
  *   (se lanzará UserException en caso contrario).
  */
 class User{
-    private static $MAX_FAILED_TRIES = 5;
     private $id;
     private $username;
     private $name;
@@ -24,7 +22,6 @@ class User{
     private $passwd;
     private $role = "";
     private $email;
-    private $failedTries = 0;
     private $verified = false;
     private $active = false;
     /**
@@ -49,7 +46,7 @@ class User{
            $this->username = $username;
            $this->name = $name;
            $this->surname = $surname;
-           $this->passwd = $passwd;
+           $this->passwd = password_hash($passwd, PASSWORD_DEFAULT);
            $this->email = $email; 
     }
 
@@ -122,43 +119,6 @@ class User{
         $this->email = $email;
     }
 
-    /**
-     * Devuelve el número de intentos fallidos de acceso.
-     *
-     * @return int
-     */
-    public function getFailedTries(): int {
-        return $this->failedTries;
-    }
-
-    /**
-     * Ajusta el contador de intentos fallidos. Solo Superadmin.
-     *
-     * @param int $tries
-     * @throws UserException si el usuario no es Superadmin
-     */
-    public function setFailedTries(int $tries): void {
-        $this->ensureSuperadmin('cambiar intentos fallidos');
-        $this->failedTries = $tries;
-    }
-
-    /**
-     * Incrementa el contador de intentos fallidos (normalmente tras un login fallido).
-     */
-    public function incrementFailedTries(): void {
-        $this->failedTries++;
-    }
-
-    /**
-     * Restablece el contador de intentos fallidos a 0. Solo Superadmin.
-     *
-     * @throws UserException si el usuario no es Superadmin
-     */
-    public function resetFailedTries(): void {
-        $this->ensureSuperadmin('restablecer intentos fallidos');
-        $this->failedTries = 0;
-    }
-
     public function isVerified(): bool {
         return $this->verified;
     }
@@ -200,10 +160,6 @@ class User{
         if ($this->role !== UserRole::SUPERADMIN->value) {
             throw new UserException("Solo superadmin puede {$action}.");
         }
-    }
-
-    public static function getMaxFailedTries(): int {
-        return self::$MAX_FAILED_TRIES;
     }
 
     /**

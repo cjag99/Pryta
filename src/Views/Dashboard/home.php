@@ -1,8 +1,10 @@
 <?php
-session_start();
-if (!$_SESSION['LOGGED']) {
+// Session is started in index.php; double-calling is harmless but we avoid it here.
+if (!isset($_SESSION)) session_start();
+if (!isset($_SESSION['user_id'])) {
     $_SESSION['ERROR'] = "<strong>ERROR:</strong> Access denied. You must login to enter this site";
-    header("Location: ./index.php", 0);
+    header("Location: index.php?action=login");
+    exit();
 }
 ?>
 <!DOCTYPE html>
@@ -16,13 +18,13 @@ if (!$_SESSION['LOGGED']) {
 </head>
 
 <body>
-    <h1><?php echo "Welcome, " . $_SESSION['USER'] ?></h1>
+    <h1><?php echo "Welcome, " . (isset($_SESSION['USER']) ? $_SESSION['USER'] : 'User #' . $_SESSION['user_id']); ?></h1>
 
     <a
         name=""
         id=""
         class="btn btn-outline-danger"
-        href="./logout.php"
+        href="index.php?action=logout"
         role="button">Log out</a>
 
 </body>

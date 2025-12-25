@@ -5,13 +5,12 @@
  *
  * - Contiene el DSN (Data Source Name) y un método para obtener una conexión.
  * - Evita guardar credenciales en el repositorio; usa variables de entorno en producción.
- *
- * TODO: Considerar un patrón singleton público o un método que gestione conexiones reusables.
  */
 class Database {
     // Data Source Name: indica host, base de datos y charset.
     // Ajusta estos valores según el entorno y evita dejar credenciales en el código fuente.
     private static $dsn = "mysql:host=localhost;dbname=pryta;charset=utf8mb4";
+     private static ?PDO $instance = null;
 
     
     /**
@@ -26,18 +25,29 @@ class Database {
      * - Actualmente las excepciones se registran y no se propagan; esto evita que información se pierda
      *   pero puede ocultar fallos durante el desarrollo. Considerar relanzar la excepción o lanzar una propia.
      */
-    private static function getInstance($username, $password){
-        $connection = null;
-        try{
-            // Opciones recomendadas para PDO (usar array asociativo)
-            $options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION];
-            $connection = new PDO(Database::$dsn, $username, $password, $options);
-        } catch (PDOException $e) {
-            // TODO: Registrar la excepción en un sistema de logging más robusto si está disponible
-            error_log('Database connection error: ' . $e->getMessage());
-            // Opcional: relanzar la excepción para que el caller la gestione
-            // throw $e;
+    public static function getInstance(
+        string $user,
+        string $password,
+        string $host = '127.0.0.1',
+        int $port = 3307,
+        string $dbname = 'pryta'
+    ): PDO {
+        if (self::$instance === null) {
+            try {
+                self::$instance = new PDO(
+                    "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8",
+                    $user,
+                    $password,
+                    [
+                        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+                    ]
+                );
+            } catch (PDOException $e) {
+                die("ERROR DE CONEXIÓN: " . $e->getMessage());
+            }
         }
-        return $connection;
+
+        return self::$instance;
     }
 }
