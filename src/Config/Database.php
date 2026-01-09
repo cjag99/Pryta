@@ -6,13 +6,14 @@
  * - Contiene el DSN (Data Source Name) y un método para obtener una conexión.
  * - Evita guardar credenciales en el repositorio; usa variables de entorno en producción.
  */
-class Database {
+class Database
+{
     // Data Source Name: indica host, base de datos y charset.
     // Ajusta estos valores según el entorno y evita dejar credenciales en el código fuente.
     private static $dsn = "mysql:host=localhost;dbname=pryta;charset=utf8mb4";
-     private static ?PDO $instance = null;
+    private static ?PDO $instance = null;
 
-    
+
     /**
      * Crea y devuelve una instancia de PDO.
      *
@@ -29,7 +30,7 @@ class Database {
         string $user,
         string $password,
         string $host = '127.0.0.1',
-        int $port = 3307,
+        int $port = 3306,
         string $dbname = 'pryta'
     ): PDO {
         if (self::$instance === null) {
