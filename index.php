@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Punto de entrada de la aplicación.
  * - Inicia la sesión, carga dependencias y delega la acción al controlador de autenticación.
@@ -8,12 +9,13 @@
 session_start();
 
 // Cargar configuración y clases necesarias
-include_once "./src/Config/Database.php";
-include_once "./src/Model/Repositories/UserRepository.php";
-include_once "./src/Controller/AuthController.php";
-
+require_once "./src/Config/Database.php";
+require_once "./src/Model/Repositories/UserRepository.php";
+require_once "./src/Controller/AuthController.php";
+require_once "./src/Config/load_env.php";
+loadEnv();
 // Crear instancia de la base de datos y repositorios (inyección de dependencias)
-$database = Database::getInstance('root', '');
+$database = Database::getInstance($_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'] ?? '', $_ENV['DB_HOST'], $_ENV['DB_PORT'], $_ENV['DB_NAME']);
 $userRepository = new UserRepository($database);
 $authController = new AuthController($userRepository);
 // Ruteo básico según el parámetro 'action' de la query string
