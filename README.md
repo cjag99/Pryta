@@ -108,13 +108,22 @@ Actualmente, **Pryta** incluye:
 ## Instalación y uso
 
 1. Instala **XAMPP** o un entorno similar con **PHP 8.2**, **MySQL 8** y **Apache**.  
-2. Copia la carpeta del proyecto en el directorio `htdocs` de XAMPP.  
-3. Importa el script SQL ubicado en `database/pryta.sql`. Este script:
+2. Copia la carpeta del proyecto en el directorio `htdocs` de XAMPP.
+3. Este proyecto utiliza **variables de entorno** para su configuración, definidas en un archivo `.env`.
+   Después de clonar el repositorio, es necesario crear el archivo `.env` en la raíz del proyecto. Puedes hacerlo tomando como referencia el archivo de ejemplo `.env.example`:
+   ```env
+   DB_HOST="127.0.0.1"
+   DB_PORT="your_port"
+   DB_NAME="pryta"
+   DB_USERNAME="your_username"
+   DB_PASSWORD="your_password"
+   ```
+5. Importa el script SQL ubicado en `database/pryta.sql`. Este script:
    - Crea la base de datos `pryta`
    - Crea las tablas necesarias
    - Inserta dos usuarios de ejemplo  
-4. No es necesario configurar credenciales adicionales en `Database.php`.  
-5. Abre el navegador y navega a:
+6. No es necesario configurar credenciales adicionales en `Database.php`.  
+7. Abre el navegador y navega a:
 ```text
 
 http://localhost/Pryta/index.php
