@@ -112,7 +112,7 @@ Actualmente, **Pryta** incluye:
 3. Este proyecto utiliza **variables de entorno** para su configuración, definidas en un archivo `.env`.
    Después de clonar el repositorio, es necesario crear el archivo `.env` en la raíz del proyecto. Puedes hacerlo tomando como referencia el archivo de ejemplo `.env.example`:
    ```env
-   DB_HOST="127.0.0.1"
+   DB_HOST="your_database_hostid"
    DB_PORT="your_port"
    DB_NAME="pryta"
    DB_USERNAME="your_username"
