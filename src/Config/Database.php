@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Clase para gestionar la conexión a la base de datos mediante PDO.
  *
@@ -28,9 +27,9 @@ class Database {
     public static function getInstance(
         string $user,
         string $password,
-        string $host = '127.0.0.1',
-        int $port = 3307,
-        string $dbname = 'pryta'
+        string $host,
+        int $port,
+        string $dbname
     ): PDO {
         if (self::$instance === null) {
             try {
