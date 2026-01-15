@@ -210,4 +210,43 @@ class User
     {
         return password_verify($passwd, $this->getPasswd());
     }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'username' => $this->getUsername(),
+            'name' => $this->getName(),
+            'surname' => $this->getSurname(),
+            'role' => $this->getRole(),
+            'email' => $this->getEmail(),
+            'verified' => $this->isVerified(),
+            'active' => $this->isActive(),
+            'team_id' => $this->getTeamId()
+        ];
+    }
+
+    public static function fromDatabase(
+        int $id,
+        string $username,
+        string $name,
+        string $surname,
+        string $hashedPassword,
+        string $email,
+        bool $verified = false,
+        bool $active = true,
+        ?int $team_id = null
+    ): self {
+        return new self(
+            $id,
+            $username,
+            $name,
+            $surname,
+            $hashedPassword, // ya viene hasheado
+            $email,
+            $verified,
+            $active,
+            $team_id
+        );
+    }
 }

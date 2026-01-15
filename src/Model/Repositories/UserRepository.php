@@ -29,21 +29,8 @@ class UserRepository extends Repository
         $command = $this->connection->prepare("SELECT * FROM user");
         $command->execute();
         $data = $command->fetchAll(PDO::FETCH_ASSOC);
-        $user = [];
-        foreach ($data as $row) {
-            $user[] = new User(
-                $row['id'],
-                $row['username'],
-                $row['name'],
-                $row['surname'],
-                $row['email'],
-                $row['password'],
-                $row['active'] ?? true,
-                $row['verified'] ?? false,
-                $row['team_id'] ?? null
-            );
-        }
-        return $user;
+
+        return $data;
     }
     public function readOne(int $userID): ?object
     {
@@ -56,7 +43,7 @@ class UserRepository extends Repository
         if (!$data) {
             return null;
         } else {
-            return new User(
+            return User::fromDatabase(
                 $data['id'],
                 $data['username'],
                 $data['name'],
@@ -113,9 +100,9 @@ class UserRepository extends Repository
         // Inserta un nuevo usuario en la tabla `user`.
         // Devuelve true si la inserción tuvo éxito, false en caso contrario.
         $sql = "INSERT INTO user
-            (id, username, name, surname, passwd, role, email, verified, active)
+            (id, username, name, surname, passwd, role, email, verified, active, team_id)
             VALUES
-            (:id, :username, :name, :surname, :passwd, :role, :email, :verified, :active)";
+            (:id, :username, :name, :surname, :passwd, :role, :email, :verified, :active, :team_id)";
 
         $stmt = $this->connection->prepare($sql);
 
@@ -192,13 +179,12 @@ class UserRepository extends Repository
         ]);
     }
 
-    public function delete(object $entity): bool
+    public function delete(int $id): void
     {
-        if (!$entity instanceof User) {
-            throw new \InvalidArgumentException("El objeto a eliminar debe ser de la clase Usuario");
-        }
-        $sql = "DELETE FROM user WHERE id = :id";
+
+        $sql = "DELETE FROM $this->table_name WHERE id = :id";
         $stmt = $this->connection->prepare($sql);
-        return $stmt->execute(['id' => $entity->getId()]);
+        $stmt->execute(['id' => $id]);
+        header("Location: index.php?controller=dashboard&action=list");
     }
 }

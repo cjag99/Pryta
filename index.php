@@ -8,6 +8,9 @@ require_once "./src/Config/SessionConfig.php";
 // Cargar configuración y clases necesarias
 require_once "./src/Config/Database.php";
 require_once "./src/Model/Repositories/UserRepository.php";
+require_once "./src/Model/Repositories/TeamRepository.php";
+require_once "./src/Model/Repositories/ProjectRepository.php";
+require_once "./src/Model/Repositories/TaskRepository.php";
 require_once "./src/Controller/AuthController.php";
 require_once "./src/Controller/DashboardController.php";
 require_once "./src/Config/load_env.php";
@@ -24,8 +27,8 @@ $controllers = [
 
 //Lista blanca de accions por controlador
 $routes = [
-    'auth' => ['login', 'authenticate', 'register', 'register_user', 'home', 'logout'],
-    'dashboard' => ['list'],
+    'auth' => ['login', 'authenticate', 'register', 'processRegistration', 'home', 'logout'],
+    'dashboard' => ['list', 'create', 'update', 'delete'],
 ];
 
 //Valores de controlador y acción por defecto
@@ -45,7 +48,7 @@ if (!in_array($action, $routes[$controllerName])) {
 }
 
 // Protección: solo usuarios logueados pueden dashboard
-if ($controllerName === 'dashboard' && !isset($_SESSION['user'])) {
+if ($controllerName === 'dashboard' && !isset($_SESSION['USER'])) {
     $_SESSION['ERROR'] = "<strong>ERROR: </strong>Acceso denegado. Debes iniciar sesión para entrar en el sitio.";
     $controllerName = 'auth';
     $action = 'login';

@@ -11,7 +11,7 @@ class DashboardController
         include __DIR__ . "/../Views/Dashboard/home.php";
     }
 
-    public function list($table_name)
+    public function list()
     {
         $allowed_tables = [
             'user' => 'user',
@@ -20,20 +20,38 @@ class DashboardController
             'task' => 'task',
         ];
 
-        if (!$table_name || !array_key_exists($table_name, $allowed_tables)) {
-            $_SESSION['ERROR'] = "<strong>ERROR: </strong>La tabla seleccionada no es correcta. Por seguridad, vuelva a iniciar sesión.";
-            header("Location: index.php?action=login");
-            exit();
+        $table_name = $_POST['table_name'] ?? null;
+
+        if (!array_key_exists($table_name, $allowed_tables)) {
+            $table_name = 'user';
         }
 
         $_SESSION['current_table'] = $allowed_tables[$table_name];
         $repository = match ($_SESSION['current_table']) {
-            'user' => new UserRepository($_SESSION['connection']),
-            //'team' => new TeamRepository($database),
-            //'project' => new ProjectRepository($database),
-            //'task' => new TaskRepository($database),
+            'user' => new UserRepository($this->connection),
+            'team' => new TeamRepository($this->connection),
+            'project' => new ProjectRepository($this->connection),
+            'task' => new TaskRepository($this->connection),
         };
         $data = $repository->readAll();
-        require "./src/Views/Dashboard/list.php";
+        if (empty($data) && $_SESSION['current_table'] === 'user') {
+            $_SESSION['error'] = "<strong>ERROR:</strong> No hay usuarios registrados en el sistema.";
+            header("Location: index.php?controller=auth&action=login");
+            exit();
+        } else {
+            require "./src/Views/Dashboard/list.php";
+        }
+    }
+
+    public function delete()
+    {
+        $repository = match ($_SESSION['current_table']) {
+            'user' => new UserRepository($this->connection),
+            'team' => new TeamRepository($this->connection),
+            'project' => new ProjectRepository($this->connection),
+            'task' => new TaskRepository($this->connection),
+        };
+        $repository->delete($_POST['id']);
+        header("Location: index.php?controller=dashboard&action=list");
     }
 }

@@ -30,7 +30,7 @@
                         <!-- Cuerpo de la tarjeta (formulario) -->
                         <div class="card-body">
                             <!-- Inicio: formulario de registro -->
-                            <form id="registerForm" action="?controller=auth&action=register_user" method="post" novalidate onsubmit="return validateRegister(event)">
+                            <form id="registerForm" action="?controller=auth&action=processRegistration" method="post" novalidate onsubmit="return validateRegister(event)">
                                 <div class="mb-3">
                                     <label for="reg_username" class="form-label text-light">Usuario</label>
                                     <input type="text" class="form-control" id="reg_username" name="username" aria-describedby="helpRegUsername" required>
