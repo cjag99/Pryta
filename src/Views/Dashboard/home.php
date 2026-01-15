@@ -4,9 +4,9 @@ if (!isset($_SESSION)) session_start();
 if (!isset($_SESSION['user_id'])) {
     // Mensaje de error en caso de acceso no autorizado (traducido a español)
     $_SESSION['ERROR'] = "<strong>ERROR:</strong> Acceso denegado. Debes iniciar sesión para entrar en el sitio";
-    header("Location: index.php?action=login");
+    header("Location: index.php?controller=auth&action=login");
     exit();
-} 
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -34,7 +34,7 @@ if (!isset($_SESSION['user_id'])) {
                         <!-- Cuerpo del panel -->
                         <div class="card-body">
                             <?php
-                                $displayName = isset($_SESSION['USER']) ? htmlspecialchars($_SESSION['USER']) : 'User #' . intval($_SESSION['user_id']);
+                            $displayName = isset($_SESSION['USER']) ? htmlspecialchars($_SESSION['USER']) : 'User #' . intval($_SESSION['user_id']);
                             ?>
                             <h4 class="card-title mb-2">Bienvenido, <?= $displayName ?></h4>
 
@@ -47,7 +47,7 @@ if (!isset($_SESSION['user_id'])) {
 
                             <!-- Botón de cerrar sesión -->
                             <div class="d-flex justify-content-center">
-                                <a class="btn btn-danger" href="index.php?action=logout" role="button">Cerrar sesión</a>
+                                <a class="btn btn-danger" href="index.php?controller=auth&action=logout" role="button">Cerrar sesión</a>
                             </div>
                         </div>
                     </div>

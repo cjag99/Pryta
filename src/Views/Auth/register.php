@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="public/styles/style.css">
     <link rel="shortcut icon" href="public/images/logo.ico" type="image/x-icon">
 </head>
+
 <body class="d-flex flex-column min-vh-100">
     <main class="flex-fill">
         <div class="container py-5">
@@ -15,9 +17,9 @@
                 <div class="col-12 col-md-8 col-lg-6">
                     <!-- Inicio: logo y título -->
                     <div class="d-flex align-items-center justify-content-center mb-4">
-                            <img src="public/images/logo.svg" alt="Pryta Logo" class="me-2" style="max-height:40px;">
-                            <h4 class="text-light m-0">Pryta</h4>
-                        </div>
+                        <img src="public/images/logo.svg" alt="Pryta Logo" class="me-2" style="max-height:40px;">
+                        <h4 class="text-light m-0">Pryta</h4>
+                    </div>
                     <!-- Fin: logo y título -->
                     <!-- Inicio: tarjeta de registro -->
                     <div class="card border-0 shadow-sm" style="background-color: rgba(255,255,255,0.03);">
@@ -28,7 +30,7 @@
                         <!-- Cuerpo de la tarjeta (formulario) -->
                         <div class="card-body">
                             <!-- Inicio: formulario de registro -->
-                            <form id="registerForm" action="?action=register_user" method="post" novalidate onsubmit="return validateRegister(event)">
+                            <form id="registerForm" action="?controller=auth&action=register_user" method="post" novalidate onsubmit="return validateRegister(event)">
                                 <div class="mb-3">
                                     <label for="reg_username" class="form-label text-light">Usuario</label>
                                     <input type="text" class="form-control" id="reg_username" name="username" aria-describedby="helpRegUsername" required>
@@ -97,4 +99,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js" integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y" crossorigin="anonymous"></script>
     <script src="public/validate.js"></script>
 </body>
+
 </html>

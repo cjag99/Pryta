@@ -13,21 +13,24 @@ include_once "./src/Services/AuthService.php";
  * - processRegistration(): procesa el registro de nuevos usuarios.
  * - home(), logout(): acceso al dashboard y cierre de sesión.
  */
-class AuthController{
+class AuthController
+{
     private UserRepository $userRepository;
     /**
      * Constructor: inyecta el repositorio de usuarios.
      * @param UserRepository $userRepository
      */
-    public function __construct(UserRepository $userRepository){
+    public function __construct(UserRepository $userRepository)
+    {
         $this->userRepository = $userRepository;
     }
 
     /**
      * Mostrar formulario de login.
      */
-    public function login(){
-        include __DIR__ . "/../Views/Auth/login.php";
+    public function login()
+    {
+        include "./src/Views/Auth/login.php";
     }
 
     /**
@@ -35,8 +38,9 @@ class AuthController{
      * - Valida datos, comprueba bloqueo por intentos y autentica usuario.
      * - En caso de éxito redirige al dashboard; en fallo vuelve al formulario con error.
      */
-    public function authenticate(){
-        if($_SERVER['REQUEST_METHOD'] === 'POST'){
+    public function authenticate()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username = ValidationService::sanitizeInput($_POST['username'] ?? '');
             // No aplicar escape HTML a las contraseñas antes de verificar; usar el valor enviado (solo trim).
             $password = isset($_POST['password']) ? trim($_POST['password']) : '';
@@ -45,7 +49,7 @@ class AuthController{
             $attemptStatus = AuthService::checkLoginAttempts();
             if ($attemptStatus['blocked']) {
                 $_SESSION['ERROR'] = $attemptStatus['message'];
-                include __DIR__ . "/../Views/Auth/login.php";
+                $this->login();
                 return;
             }
 
@@ -54,13 +58,13 @@ class AuthController{
 
             if ($user) {
                 // Validación adicional del lado servidor para asegurar formato correcto
-                if(!ValidationService::validateUserName($username)){
+                if (!ValidationService::validateUserName($username)) {
                     $_SESSION['ERROR'] = "Nombre de usuario inválido.";
-                    include __DIR__ . "/../Views/Auth/login.php";
+                    $this->login();
                     return;
-                } else if (!ValidationService::validatePassword($password)){
+                } else if (!ValidationService::validatePassword($password)) {
                     $_SESSION['ERROR'] = "Contraseña inválida.";
-                    include __DIR__ . "/../Views/Auth/login.php";
+                    $this->login();
                     return;
                 }
                 $_SESSION['user_id'] = $user->getId();
@@ -69,16 +73,16 @@ class AuthController{
                 $_SESSION['USER'] = $user->getUsername();
                 AuthService::resetLoginAttempts();
                 // Redirigir a la acción del dashboard mapeada (index.php gestiona 'dashboard')
-                header('Location: index.php?action=dashboard');
+                header('Location: index.php?controller=auth&action=home');
                 exit();
             } else {
                 // Incrementar contador de intentos y devolver error
                 AuthService::incrementLoginAttempts();
                 $_SESSION['ERROR'] = "Credenciales inválidas. Inténtelo de nuevo.";
-                include __DIR__ . "/../Views/Auth/login.php";
+                $this->login();
             }
         } else {
-            header('Location: index.php?action=login');
+            $this->login();
             exit();
         }
     }
@@ -87,11 +91,12 @@ class AuthController{
      * Mostrar la vista del dashboard (requiere sesión iniciada).
      * Si no hay sesión, se redirige al login.
      */
-    public function home(){
-        if(!isset($_SESSION['user_id'])){
+    public function home()
+    {
+        if (!isset($_SESSION['user_id'])) {
             // Verificar bloqueos por intentos antes de redirigir
             AuthService::checkLoginAttempts();
-            header('Location: index.php?action=login');
+            $this->login();
             exit();
         }
         include __DIR__ . "/../Views/Dashboard/home.php";
@@ -100,17 +105,19 @@ class AuthController{
     /**
      * Cerrar sesión del usuario y redirigir al login.
      */
-    public function logout(){
+    public function logout()
+    {
         session_unset();
         session_destroy();
-        header('Location: index.php?action=login');
+        header('Location: index.php?controller=auth&action=login');
         exit();
     }
 
     /**
      * Mostrar formulario de registro.
      */
-    public function register(){
+    public function register()
+    {
         include __DIR__ . "/../Views/Auth/register.php";
     }
 
@@ -118,48 +125,48 @@ class AuthController{
      * Procesa el envío del formulario de registro.
      * - Valida campos mínimos y crea el usuario si todo es correcto.
      */
-    public function processRegistration(){
+    public function processRegistration()
+    {
         // Solo aceptamos POST
-        if($_SERVER['REQUEST_METHOD'] === 'POST'){
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Comprobar y sanear campos enviados
-            if(isset($_POST['username'])){
+            if (isset($_POST['username'])) {
                 $username = ValidationService::sanitizeInput($_POST['username']);
                 // Validaciones básicas
-                if(!ValidationService::validateUserName($username)){
+                if (!ValidationService::validateUserName($username)) {
                     $_SESSION['ERROR'] = "Nombre de usuario inválido.";
-                    include __DIR__ . "/../Views/Auth/register.php";
+                    $this->register();
                     return;
                 }
-                if(isset($_POST['password'])){
+                if (isset($_POST['password'])) {
                     $password = trim($_POST['password']);
-                    if(!ValidationService::validatePassword($password)){
+                    if (!ValidationService::validatePassword($password)) {
                         $_SESSION['ERROR'] = "Contraseña inválida.";
-                        include __DIR__ . "/../Views/Auth/register.php";
+                        $this->register();
                         return;
                     }
                 }
-                if(isset($_POST['confirm_password'])){
+                if (isset($_POST['confirm_password'])) {
                     $confirmPassword = trim($_POST['confirm_password']);
-                    if($password !== $confirmPassword){
+                    if ($password !== $confirmPassword) {
                         $_SESSION['ERROR'] = "Las contraseñas no coinciden.";
-                        include __DIR__ . "/../Views/Auth/register.php";
+                        $this->register();
                         return;
                     }
                 }
-                if(isset($_POST['name']) && isset($_POST['surname']) && isset($_POST['email'])){
+                if (isset($_POST['name']) && isset($_POST['surname']) && isset($_POST['email'])) {
                     $name = ValidationService::sanitizeInput($_POST['name']);
                     $surname = ValidationService::sanitizeInput($_POST['surname']);
                     $email = ValidationService::sanitizeInput($_POST['email']);
                     // Crear entidad de usuario y guardarla en el repositorio
                     $user = new User(0, $username, $name, $surname, $password, $email);
-                    $this->userRepository->insert($user);
-                    header('Location: index.php?action=login');
+                    $this->userRepository->create($user);
+                    header('Location: index.php?controller=auth&action=login');
                     exit();
                 }
-               
             }
         } else {
-            header('Location: index.php?action=register');
+            header('Location: index.php?controller=auth&action=register');
             exit();
         }
     }

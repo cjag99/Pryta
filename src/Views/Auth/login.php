@@ -13,18 +13,18 @@
 <body class="d-flex flex-column min-vh-100">
     <div class="loginWindow">
         <div class="container">
-                <div class="row align-items-center g-0">
+            <div class="row align-items-center g-0">
                 <div class="col-12 col-md-7 text-light d-flex align-items-center order-2 order-md-1 h-100">
                     <div class="w-100 px-4 py-5" style="max-width:560px; margin:auto;">
-                            <!-- Inicio: logo y título de la aplicación -->
+                        <!-- Inicio: logo y título de la aplicación -->
                         <div class="d-flex align-items-center mb-4">
                             <img src="public/images/logo.svg" alt="Pryta Logo" class="me-2" style="max-height:40px;">
                             <h4 class="text-light m-0">Pryta</h4>
                         </div>
-                        <!-- Fin: logo y título -->                        <!-- Fin: logo y título -->
+                        <!-- Fin: logo y título --> <!-- Fin: logo y título -->
 
                         <!-- Inicio: formulario de inicio de sesión -->
-                        <form id="loginForm" action="?action=authenticate" method="post" onsubmit="validateLogin(event)">
+                        <form id="loginForm" action="?controller=auth&action=authenticate" method="post" onsubmit="validateLogin(event)">
                             <h3 class="mb-4">Bienvenido a Pryta Tech</h3>
 
                             <div class="row">
@@ -84,7 +84,7 @@
                         <div class="mt-3 failLogin">
                             <?php
                             require_once "./src/Utils/auth_utils.php";
-                            if (isset($_SESSION['ERROR'])){
+                            if (isset($_SESSION['ERROR'])) {
                                 throwAlert();
                                 unset($_SESSION['ERROR']);
                             }
