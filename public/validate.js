@@ -221,6 +221,8 @@
 
   // Añadir manejadores de eventos
   document.addEventListener("DOMContentLoaded", function () {
+    //Llamada a función de cierre de alertas
+    autoCloseBootstrapAlerts(5000);
     // Formulario de login
     const username = document.getElementById("username");
     const password = document.getElementById("password");
@@ -238,6 +240,21 @@
     const regConfirm = document.getElementById("reg_confirm");
     const regForm = document.getElementById("registerForm");
 
+    //Función que añade un delay de 5 segundos para cerrar los alerts que genere la aplicacion con formato reconocible por la api de Bootstrap
+    function autoCloseBootstrapAlerts(delay = 5000) {
+      const alerts = document.querySelectorAll(".alert");
+
+      alerts.forEach((alert) => {
+        setTimeout(() => {
+          if (typeof bootstrap !== "undefined") {
+            const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+            bsAlert.close();
+          } else {
+            alert.style.display = "none";
+          }
+        }, delay);
+      });
+    }
     if (regUsername) regUsername.addEventListener("input", validateRegUsername);
     if (regName) regName.addEventListener("input", validateRegName);
     if (regSurname) regSurname.addEventListener("input", validateRegSurname);
