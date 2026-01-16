@@ -19,6 +19,7 @@ if (!isset($_SESSION['user_id'])) {
 </head>
 
 <body class="d-flex flex-column min-vh-100">
+    <?php include_once 'src/Views/Templates/header.php'; ?>
     <!-- Inicio: contenido principal -->
     <main class="flex-fill">
         <div class="container py-5">
@@ -43,18 +44,10 @@ if (!isset($_SESSION['user_id'])) {
                             <ul class="list-group mb-3">
                                 <li class="list-group-item bg-transparent text-light border-secondary">No hay proyectos asignados.</li>
                             </ul>
-                            <div class="d-flex justify-content-center">
-                                <form action="index.php?controller=dashboard&action=list" method="post">
-                                    <button type="submit" class="btn btn-primary" name="table_name" value="user">Ver listado de usuarios</button>
-                                    <button type="submit" class="btn btn-primary" name="table_name" value="team">Ver listado de equipos</button>
-                                    <button type="submit" class="btn btn-primary" name="table_name" value="project">Ver listado de proyectos</button>
-                                    <button type="submit" class="btn btn-primary" name="table_name" value="task">Ver listado de tareas</button>
-                                </form>
-                            </div>
-                            <!-- Botón de cerrar sesión -->
-                            <div class="d-flex justify-content-center">
-                                <a class="btn btn-danger" href="index.php?controller=auth&action=logout" role="button">Cerrar sesión</a>
-                            </div>
+
+
+
+
                         </div>
                     </div>
                 </div>

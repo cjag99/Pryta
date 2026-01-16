@@ -159,7 +159,7 @@ class AuthController
                     $surname = ValidationService::sanitizeInput($_POST['surname']);
                     $email = ValidationService::sanitizeInput($_POST['email']);
                     // Crear entidad de usuario y guardarla en el repositorio
-                    $user = new User(0, $username, $name, $surname, $password, $email);
+                    $user = new User(0, $username, $name, $surname, $password, "Software Engineer", $email, false, true, null);
                     $this->userRepository->create($user);
                     header('Location: index.php?controller=auth&action=login');
                     exit();
@@ -169,5 +169,32 @@ class AuthController
             header('Location: index.php?controller=auth&action=register');
             exit();
         }
+    }
+
+    public function profile()
+    {
+        if (!isset($_SESSION['user_id'])) {
+            // Verificar bloqueos por intentos antes de redirigir
+            AuthService::checkLoginAttempts();
+            $this->login();
+            exit();
+        }
+        $userInfo = $this->userRepository->readOne($_SESSION['user_id']);
+        include __DIR__ . "/../Views/Auth/profile.php";
+    }
+
+    public function updateProfile()
+    {
+        $userInfo = $this->userRepository->readOne($_SESSION['user_id']);
+        $userInfo->setUsername($_POST['username']);
+        $userInfo->setName($_POST['name']);
+        $userInfo->setSurname($_POST['surname']);
+        $userInfo->setEmail($_POST['email']);
+        if (!empty($_POST['password']) && $_POST['password'] === $_POST['confirm_password']) {
+            $userInfo->setPasswd($_POST['password']);
+        }
+        $this->userRepository->updateProfile($userInfo);
+        header('Location: index.php?controller=auth&action=profile');
+        exit;
     }
 }

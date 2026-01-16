@@ -50,10 +50,11 @@ class UserRepository extends Repository
                 $data['username'],
                 $data['name'],
                 $data['surname'],
+                $data['passwd'],
+                $data['role'],
                 $data['email'],
-                $data['password'],
-                $data['active'] ?? true,
-                $data['verified'] ?? false,
+                $data['verified'] === 1 ? true : false,
+                $data['active'] === 1 ? true : false,
                 $data['team_id'] ?? null
             );
         }
@@ -165,6 +166,8 @@ class UserRepository extends Repository
             SET username = :username,
                 name = :name,
                 surname = :surname,
+                passwd = :passwd,
+                role = :role,
                 email = :email,
                 active = :active,
                 verified = :verified,
@@ -173,16 +176,19 @@ class UserRepository extends Repository
 
         $stmt = $this->connection->prepare($sql);
 
-        return $stmt->execute([
+        $stmt->execute([
             'id'           => $entity->getId(),
             'username'     => $entity->getUsername(),
             'name'         => $entity->getName(),
             'surname'      => $entity->getSurname(),
+            'passwd'       => $entity->getPasswd(),
+            'role'         => $entity->getRole(),
             'email'        => $entity->getEmail(),
             'active'       => $entity->isActive() ? 1 : 0,
             'verified'     => $entity->isVerified() ? 1 : 0,
             'team_id'      => $entity->getTeamId() ?? null
         ]);
+        return $stmt->rowCount() > 0;
     }
 
     public function delete(int $id): void
@@ -192,5 +198,28 @@ class UserRepository extends Repository
         $stmt = $this->connection->prepare($sql);
         $stmt->execute(['id' => $id]);
         header("Location: index.php?controller=dashboard&action=list");
+    }
+
+    public function updateProfile(object $entity): bool
+    {
+        $sql = "UPDATE user
+            SET username = :username,
+                name = :name,
+                surname = :surname,
+                email = :email,
+                passwd = :passwd
+            WHERE id = :id";
+
+        $stmt = $this->connection->prepare($sql);
+
+        $stmt->execute([
+            'id'           => $entity->getId(),
+            'username'     => $entity->getUsername(),
+            'name'         => $entity->getName(),
+            'surname'      => $entity->getSurname(),
+            'email'        => $entity->getEmail(),
+            'passwd'       => $entity->getPasswd(),
+        ]);
+        return $stmt->rowCount() > 0;
     }
 }

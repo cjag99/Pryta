@@ -5,7 +5,7 @@ require_once "./src/Model/Entities/UserRole.php";
 
 <body>
     <div class="card-body">
-        <form id="registerForm" action="index.php?controller=dashboard&action=create" method="post" novalidate onsubmit="return validateRegister(event)">
+        <form id="registerForm" action="index.php?controller=dashboard&action=create" method="post">
             <div class="mb-3">
                 <label for="reg_username" class="form-label">Usuario</label>
                 <input type="text" class="form-control" id="reg_username" name="username" required>

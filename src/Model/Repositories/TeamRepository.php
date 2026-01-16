@@ -21,7 +21,7 @@ class TeamRepository extends Repository
         $stmt->execute([
             ':name' => $team->getName(),
             ':description' => $team->getDescription(),
-            ':creation_date' => $team->getCreationDate()->format('Y-m-d H:i:s'),
+            ':creation_date' => $team->getCreationDate(),
             ':team_leader' => $team->getTeamLeader(),
             ':is_available' => $team->isAvailable()
         ]);
@@ -61,14 +61,14 @@ class TeamRepository extends Repository
         $query = "UPDATE $this->table_name SET name = :name, description = :description, creation_date = :creation_date, team_leader = :team_leader, is_available = :is_available WHERE id = :id";
         $stmt = $this->connection->prepare($query);
         $stmt->execute([
+            ':id' => $team->getId(),
             ':name' => $team->getName(),
             ':description' => $team->getDescription(),
-            ':creation_date' => $team->getCreationDate()->format('Y-m-d H:i:s'),
-            ':team_leader' => $team->getTeamLeader(),
-            ':is_available' => $team->isAvailable(),
-            ':id' => $team->getId()
+            ':creation_date' => $team->getCreationDate(),
+            ':is_available' => $team->isAvailable() ? 1 : 0,
+            ':team_leader' => $team->getTeamLeader() ?? null,
         ]);
-        return true;
+        return $stmt->rowCount() > 0;
     }
 
     public function delete(int $id): void

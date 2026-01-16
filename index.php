@@ -27,8 +27,8 @@ $controllers = [
 
 //Lista blanca de accions por controlador
 $routes = [
-    'auth' => ['login', 'authenticate', 'register', 'processRegistration', 'home', 'logout'],
-    'dashboard' => ['list', 'create', 'update', 'delete'],
+    'auth' => ['login', 'authenticate', 'register', 'processRegistration', 'home', 'logout', 'profile', 'updateProfile'],
+    'dashboard' => ['list', 'create', 'update', 'delete', 'settings'],
 ];
 
 //Valores de controlador y acción por defecto

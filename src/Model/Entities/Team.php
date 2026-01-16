@@ -5,10 +5,12 @@ class Team
         private int $id,
         private string $name,
         private ?string $description = null,
-        private DateTimeImmutable $creation_date = new DateTimeImmutable(),
+        private ?DateTimeImmutable $creation_date = null,
         private ?int $team_leader = null,
         private bool $is_available = true
-    ) {}
+    ) {
+        $this->creation_date = $creation_date ?? new DateTimeImmutable();
+    }
 
     public function getId(): int
     {
@@ -25,9 +27,9 @@ class Team
         return $this->description;
     }
 
-    public function getCreationDate(): DateTimeImmutable
+    public function getCreationDate(): string
     {
-        return $this->creation_date;
+        return $this->creation_date->format('Y-m-d');
     }
 
     public function getTeamLeader(): ?int
@@ -50,9 +52,9 @@ class Team
         $this->description = $description;
     }
 
-    public function setCreationDate(DateTimeImmutable $creation_date): void
+    public function setCreationDate(?DateTimeImmutable $creation_date): void
     {
-        $this->creation_date = $creation_date;
+        $this->creation_date = $creation_date ?? new DateTimeImmutable();
     }
 
     public function setTeamLeader(?int $team_leader): void
