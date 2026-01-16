@@ -96,15 +96,106 @@
                             <?php endif; ?>
                         <?php endforeach; ?>
                         <td>
-                            <button type="button" class="btn btn-warning">
+                            <!-- Modal trigger button -->
+                            <button
+                                type="button"
+                                class="btn btn-warning btn-sm"
+                                data-bs-toggle="modal"
+                                data-bs-target="#updateModal">
                                 Editar
                             </button>
 
-                            <form action="index.php?controller=dashboard&action=delete&id=<?= $user['id'] ?>" method="post">
-                                <input type="hidden" name="table_name" value="<?= $_SESSION['current_table'] ?>">
-                                <input type="hidden" name="id" value="<?= $user['id'] ?>">
-                                <button type="submit" class="btn btn-danger">Eliminar</button>
-                            </form>
+                            <!-- Modal Body -->
+                            <!-- if you want to close by clicking outside the modal, delete the last endpoint:data-bs-backdrop and data-bs-keyboard -->
+                            <div
+                                class="modal fade"
+                                id="updateModal"
+                                tabindex="-1"
+                                data-bs-backdrop="static"
+                                data-bs-keyboard="false"
+
+                                role="dialog"
+                                aria-labelledby="updateModalTitle"
+                                aria-hidden="true">
+                                <div
+                                    class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm"
+                                    role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="updateModalTitle">
+                                                Editar <?= $_SESSION['current_table']; ?>
+                                            </h5>
+                                            <button
+                                                type="button"
+                                                class="btn-close"
+                                                data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <?php include "./src/Views/Templates/updateUser.php"; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Optional: Place to the bottom of scripts -->
+
+
+                            <!-- Modal trigger button -->
+                            <button
+                                type="button"
+                                class="btn btn-danger btn-sm"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteModal">
+                                Eliminar
+                            </button>
+
+                            <!-- Modal Body -->
+                            <!-- if you want to close by clicking outside the modal, delete the last endpoint:data-bs-backdrop and data-bs-keyboard -->
+                            <div
+                                class="modal fade"
+                                id="deleteModal"
+                                tabindex="-1"
+                                data-bs-backdrop="static"
+                                data-bs-keyboard="false"
+
+                                role="dialog"
+                                aria-labelledby="deleteModalTitle"
+                                aria-hidden="true">
+                                <div
+                                    class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm"
+                                    role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteModalTitle">
+                                                Eliminar registro
+                                            </h5>
+                                            <button
+                                                type="button"
+                                                class="btn-close"
+                                                data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">¿Desea eliminar el registro?</div>
+                                        <form action="index.php?controller=dashboard&action=delete&id=<?= $user['id'] ?>" method="post">
+                                            <input type="hidden" name="table_name" value="<?= $_SESSION['current_table'] ?>">
+                                            <input type="hidden" name="id" value="<?= $user['id'] ?>">
+
+                                            <div class="modal-footer">
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">
+                                                    Cancelar
+                                                </button>
+                                                <button type="submit" class="btn btn-danger">Confirmar</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+
                         </td>
                     </tr>
                 <?php endforeach; ?>

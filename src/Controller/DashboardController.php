@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 class DashboardController
 {
@@ -43,6 +44,40 @@ class DashboardController
         }
     }
 
+
+    public function create()
+    {
+        $repository = match ($_SESSION['current_table']) {
+            'user' => new UserRepository($this->connection),
+            'team' => new TeamRepository($this->connection),
+            'project' => new ProjectRepository($this->connection),
+            'task' => new TaskRepository($this->connection),
+        };
+        switch ($_SESSION['current_table']) {
+            case 'user':
+                $team_id = $_POST['team_id'] ?? null;
+                if ($team_id == '' || !is_numeric($team_id)) {
+                    $team_id = null;
+                } else {
+                    $team_id = (int)$team_id;
+                }
+                $user = new User(
+                    0,
+                    $_POST['username'],
+                    $_POST['name'],
+                    $_POST['surname'],
+                    $_POST['password'],
+                    $_POST['role'],
+                    $_POST['email'],
+                    $_POST['active'] === '1' ? true : false,
+                    $_POST['verified'] === '1' ? true : false,
+                    $team_id
+                );
+                $repository->create($user);
+                break;
+        }
+        header("Location: index.php?controller=dashboard&action=list");
+    }
     public function delete()
     {
         $repository = match ($_SESSION['current_table']) {
@@ -51,7 +86,7 @@ class DashboardController
             'project' => new ProjectRepository($this->connection),
             'task' => new TaskRepository($this->connection),
         };
-        $repository->delete($_POST['id']);
+        $repository->delete((int)$_POST['id']);
         header("Location: index.php?controller=dashboard&action=list");
     }
 }

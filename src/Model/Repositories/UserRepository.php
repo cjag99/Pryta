@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 require_once "./src/Config/Database.php";
 require_once "./src/Model/Entities/User.php";
 require_once "./src/Model/Repositories/Repository.php";
@@ -106,7 +108,8 @@ class UserRepository extends Repository
 
         $stmt = $this->connection->prepare($sql);
 
-        return $stmt->execute([
+        $teamId = $user->getTeamId();
+        $params = [
             'id'           => $user->getId(),
             'username'     => $user->getUsername(),
             'name'         => $user->getName(),
@@ -116,8 +119,10 @@ class UserRepository extends Repository
             'email'        => $user->getEmail(),
             'verified'     => $user->isVerified() ? 1 : 0,
             'active'       => $user->isActive() ? 1 : 0,
-            'team_id'      => $user->getTeamId() ?? null
-        ]);
+            'team_id'  => ($user->getTeamId() !== null) ? $user->getTeamId() : null,
+        ];
+
+        return $stmt->execute($params);
     }
     public function login(string $username, string $passwd): User|false
     {
@@ -141,10 +146,11 @@ class UserRepository extends Repository
                 $data['username'],
                 $data['name'],
                 $data['surname'],
-                $data['email'],
                 $data['passwd'],
-                $data['active'] ?? true,
-                $data['verified'] ?? false,
+                $data['role'],
+                $data['email'],
+                $data['verified'] === '1' ? true : false,
+                $data['active'] === '1' ? true : false,
                 $data['team_id'] ?? null
             );
         } else {

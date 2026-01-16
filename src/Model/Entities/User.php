@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 require_once "./src/Model/Entities/UserRole.php";
 require_once "./src/Model/Entities/UserException.php";
 
@@ -42,6 +44,7 @@ class User
         string $name,
         string $surname,
         string $passwd,
+        string $role,
         string $email,
         bool $verified = false,
         bool $active = true,
@@ -52,6 +55,7 @@ class User
         $this->name = $name;
         $this->surname = $surname;
         $this->passwd = password_hash($passwd, PASSWORD_DEFAULT);
+        $this->role = $role;
         $this->email = $email;
         $this->verified = $verified;
         $this->active = $active;
@@ -232,6 +236,7 @@ class User
         string $name,
         string $surname,
         string $hashedPassword,
+        string $role,
         string $email,
         bool $verified = false,
         bool $active = true,
@@ -243,6 +248,7 @@ class User
             $name,
             $surname,
             $hashedPassword, // ya viene hasheado
+            $role,
             $email,
             $verified,
             $active,
