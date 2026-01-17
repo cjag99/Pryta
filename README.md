@@ -34,37 +34,46 @@ Pryta permite registrar usuarios, crear equipos, asignar proyectos a equipos y g
 ## Instalación y ejecución local
 
 1. Clonar el repositorio
-```bash
+````bash
 
 git clone https://github.com/cjag99/Pryta.git
-```
+`````
 2. Importar la base de datos. Para ello ejecute en su servicio de base de datos el fichero ``pryta.sql`` en la carpeta ``database``.
 3. Configurar variables de entorno: Las variables de entorno en este proyecto son requeridas por un fichero ``.env.`` Deberá crearlo siguiendo la estructura proporcionada por el siguiente fichero ``.env.example``:
+````env
+DB_HOST="database_hostid"
+DB_PORT="your_port"
+DB_NAME="pryta"
+DB_USERNAME="your_username"
+DB_PASSWORD="your_password"
+````
+4. Iniciar su servidor (Apache/XAMPP/Laragon) y acceda a ``https://localhost/Pryta/``.
 
-   
-
-    Iniciar servidor
-
-    Iniciar XAMPP (Apache + MySQL) y acceder a http://localhost/<ruta-al-proyecto>.
-
-Estructura del proyecto
-Código
-
-/Pryta
-├─ /app
-│  ├─ /controllers
-│  ├─ /models
-│  └─ /views
-├─ /public
-│  └─ index.php
-├─ /database
-│  └─ pryta.sql
-├─ /assets
-│  ├─ /css
-│  └─ /js
-├─ .env.example
-└─ README.md
-
+## Estructura del proyecto
+1. Estructura de carpetas:
+````
+Pryta
+├───index.php
+├───.env
+├───.env.example
+├───database
+├───public
+│   ├───images
+|   ├───validate.js
+│   └───styles
+└───src
+    ├───Config
+    ├───Controller
+    ├───Model
+    │   ├───Entities
+    │   └───Repositories
+    ├───Services
+    ├───Utils
+    └───Views
+        ├───Auth
+        ├───Dashboard
+        └───Templates
+````
 Modelos y campos
 
 Usuario
