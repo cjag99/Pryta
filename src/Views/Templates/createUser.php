@@ -40,6 +40,17 @@ require_once "./src/Model/Entities/UserRole.php";
                     <?php endforeach; ?>
                 </select>
             </div>
+            <div class="mb-3">
+                <label for="reg_team_Id" class="form-label">Equipo asignado</label>
+                <select class="form-select" id="reg_team_Id" name="team_id">
+                    <option selected disabled value="">Seleccione un equipo</option>
+                    <?php foreach ($auxiliar_data as $team): ?>
+                        <option value="<?= htmlspecialchars($team['id'], ENT_QUOTES, 'UTF-8') ?>">
+                            <?= htmlspecialchars($team['name'], ENT_QUOTES, 'UTF-8') ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
 
             <div class="mb-3">
                 <label for="verified" class="form-label">Verificado:</label><br>
@@ -63,6 +74,7 @@ require_once "./src/Model/Entities/UserRole.php";
                 <input type="password" class="form-control" id="reg_confirm" name="confirm_password" required>
             </div>
 
+            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
             <button type="submit" class="btn btn-success">Registrar</button>
             <a href="index.php?controller=dashboard&action=list" class="btn btn-danger">Volver</a>
         </form>

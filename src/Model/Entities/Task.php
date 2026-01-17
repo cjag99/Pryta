@@ -5,11 +5,11 @@ class Task
     public function __construct(
         private int $id,
         private string $name,
+        private int $project_id,
         private ?string $description = null,
         private string $state = TaskState::NOT_ASSIGNED->value,
         private ?DateTimeImmutable $started_on = null,
         private ?DateTimeImmutable $due_date = null,
-        private int $project_id,
         private ?int $member_assigned = null
     ) {}
 
@@ -19,6 +19,10 @@ class Task
         return $this->id;
     }
 
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
     public function getName(): string
     {
         return $this->name;
@@ -29,9 +33,9 @@ class Task
         return $this->description;
     }
 
-    public function getDescriptionOrNull(): string
+    public function setDescription(?string $description): void
     {
-        return $this->description ?? '';
+        $this->description = $description;
     }
 
     public function setState(string $state): void
@@ -52,9 +56,9 @@ class Task
         $this->started_on = $started_on;
     }
 
-    public function getStartedOn(): ?DateTimeImmutable
+    public function getStartedOn(): ?string
     {
-        return $this->started_on;
+        return $this->started_on?->format('Y-m-d');
     }
 
     public function setDueDate(?DateTimeImmutable $due_date): void
@@ -62,9 +66,9 @@ class Task
         $this->due_date = $due_date;
     }
 
-    public function getDueDate(): ?DateTimeImmutable
+    public function getDueDate(): ?string
     {
-        return $this->due_date;
+        return $this->due_date?->format('Y-m-d');
     }
 
     public function setProjectId(int $project_id): void

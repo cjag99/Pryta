@@ -14,7 +14,8 @@
  * entornos distribuidos o con múltiples servidores considera persistir este estado
  * en una base de datos o en un store compartido (redis) para evitar inconsistencias.
  */
-class AuthService{
+class AuthService
+{
     const MAX_LOGIN_ATTEMPTS = 5;
     const LOCKOUT_TIME = 900; // segundos (15 minutos)
 
@@ -30,26 +31,27 @@ class AuthService{
      *
      * @return array { 'blocked' => bool, 'message' => string, 'blocked_time' => int }
      */
-    public static function checkLoginAttempts(){
+    public static function checkLoginAttempts()
+    {
 
         // Inicializamos contador y marca temporal si no existen
-        if(!isset($_SESSION['login_attempts'])){
+        if (!isset($_SESSION['login_attempts'])) {
             $_SESSION['login_attempts'] = 0;
             $_SESSION['first_attempt'] = time();
         }
 
         // Si alcanzamos el número máximo de intentos, comprobamos el tiempo de bloqueo
-        if($_SESSION['login_attempts']>= self::MAX_LOGIN_ATTEMPTS){
+        if ($_SESSION['login_attempts'] >= self::MAX_LOGIN_ATTEMPTS) {
             $time_passed = time() - $_SESSION['first_attempt'];
-            if($time_passed < self::LOCKOUT_TIME){
+            if ($time_passed < self::LOCKOUT_TIME) {
                 // Calculamos minutos restantes y devolvemos el estado bloqueado
-                $blocked_time = ceil((self::LOCKOUT_TIME - $time_passed)/60);
+                $blocked_time = ceil((self::LOCKOUT_TIME - $time_passed) / 60);
                 return [
-                    'blocked'=>true,
+                    'blocked' => true,
                     'message' => "Demasiados intentos. Espere {$blocked_time} minutos e inténtelo de nuevo",
-                    'blocked_time'=> $blocked_time
+                    'blocked_time' => $blocked_time
                 ];
-            } else{
+            } else {
                 // Se ha cumplido el periodo de bloqueo: reseteamos para permitir nuevos intentos
                 self::resetLoginAttempts();
             }
@@ -57,9 +59,9 @@ class AuthService{
 
         // No bloqueado: devolvemos valores por defecto
         return [
-            'blocked'=> false,
-            'message'=> "",
-            'blocked_time'=> 0
+            'blocked' => false,
+            'message' => "",
+            'blocked_time' => 0
         ];
     }
 
@@ -67,7 +69,8 @@ class AuthService{
      * Reinicia el contador de intentos de inicio de sesión.
      * Se usa tras superar el periodo de bloqueo o después de un login exitoso.
      */
-    public static function resetLoginAttempts(){
+    public static function resetLoginAttempts()
+    {
         $_SESSION['login_attempts'] = 0;
         unset($_SESSION['first_attempt']);
     }
@@ -76,7 +79,7 @@ class AuthService{
      * Incrementa el contador de intentos fallidos. Si no existe el contador,
      * lo inicializa y marca el primer intento con la hora actual.
      */
-     public static function incrementLoginAttempts()
+    public static function incrementLoginAttempts()
     {
         if (!isset($_SESSION['login_attempts'])) {
             $_SESSION['login_attempts'] = 0;
@@ -86,4 +89,33 @@ class AuthService{
         $_SESSION['login_attempts']++;
     }
 
+    /**
+     * Verifica si el usuario autenticado tiene el rol especificado.
+     *
+     * @param string $role rol a verificar
+     * @return bool true si el usuario autenticado tiene el rol, false en caso contrario
+     */
+    public static function hasRole($role): bool
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        return isset($_SESSION['role']) && $_SESSION['role'] === $role;
+    }
+
+    /**
+     * Requiere que el usuario autenticado tenga el rol especificado.
+     * Si no se cumple con esta condición, se redirige al inicio de sesión y se
+     * muestra un mensaje de error.
+     *
+     * @param string $role rol a verificar
+     */
+    public static function requireRole($role): void
+    {
+        if (!self::hasRole($role)) {
+            $_SESSION['ERROR'] = "<strong>ERROR: </strong>No tienes permiso para acceder a esta sección.";
+            header("Location: index.php?controller=auth&action=logout");
+            exit();
+        }
+    }
 }

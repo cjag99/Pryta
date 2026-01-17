@@ -1,10 +1,19 @@
 <?php
+require_once "./src/Services/AuthService.php";
+if (!isset($_SESSION['user_id'])) {
+    // Mensaje de error en caso de acceso no autorizado (traducido a español)
+    $_SESSION['ERROR'] = "<strong>ERROR:</strong> Acceso denegado. Debes iniciar sesión para entrar en el sitio";
+    header("Location: index.php?controller=auth&action=login");
+    exit();
+}
 $nombreTabla = match ($_SESSION['current_table']) {
     'user' => 'Usuarios',
     'team' => 'Equipos',
     'project' => 'Proyectos',
     'task' => 'Tareas',
-}
+};
+$canSeeCreateButton = $_SESSION['role'] === 'Superadmin' || ($_SESSION['role'] === 'Team Leader' && $_SESSION['current_table'] === 'task');
+$canSeeUpdateButton = AuthService::hasRole('Superadmin') || $_SESSION['current_table'] === 'task';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -20,16 +29,17 @@ $nombreTabla = match ($_SESSION['current_table']) {
 <body>
     <?php include_once "src/Views/Templates/header.php" ?>
     <h1 class="text-center text-light"><?= $nombreTabla; ?></h1>
-    <div class="container">
-
-        <button
-            type="button"
-            class="btn btn-success btn-md m-4"
-            data-bs-toggle="modal"
-            data-bs-target="#modalId">
-            Crear
-        </button>
-
+    <div class="container table-responsive">
+        <!-- Verificar rol para mostrar botón de creación -->
+        <?php if ($canSeeCreateButton) : ?>
+            <button
+                type="button"
+                class="btn btn-success btn-md m-4"
+                data-bs-toggle="modal"
+                data-bs-target="#modalId">
+                Crear
+            </button>
+        <?php endif; ?>
         <div
             class="modal fade"
             id="modalId"
@@ -63,6 +73,16 @@ $nombreTabla = match ($_SESSION['current_table']) {
                             case 'team':
                                 include "./src/Views/Templates/createTeam.php";
                                 break;
+                            case 'project':
+                                include "./src/Views/Templates/createProject.php";
+                                break;
+                            case 'task':
+                                include "./src/Views/Templates/createTask.php";
+                                break;
+                            default:
+                                $_SESSION['ERROR'] = "<strong>ERROR: </strong>Esta tabla no existe en la base de datos.";
+                                header("index.php?controller=auth&action=logout");
+                                exit;
                         }
                         ?>
                     </div>
@@ -76,7 +96,7 @@ $nombreTabla = match ($_SESSION['current_table']) {
         <?php if (!empty($data)): ?>
             <?php $columns = array_keys($data[0]); ?>
 
-            <table class="table table-striped table-hover table-dark">
+            <table class="table table-striped table-hover table-dark shadow-lg rounded-3">
                 <thead>
                     <tr>
                         <?php foreach ($columns as $col): ?>
@@ -97,17 +117,15 @@ $nombreTabla = match ($_SESSION['current_table']) {
                                 <?php endif; ?>
                             <?php endforeach; ?>
                             <td>
-                                <!-- Modal trigger button -->
-                                <button
-                                    type="button"
-                                    class="btn btn-warning btn-sm"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#updateModal<?= $record['id']  ?>">
-                                    Editar
-                                </button>
-
-                                <!-- Modal Body -->
-                                <!-- if you want to close by clicking outside the modal, delete the last endpoint:data-bs-backdrop and data-bs-keyboard -->
+                                <?php if ($canSeeUpdateButton) : ?>
+                                    <button
+                                        type="button"
+                                        class="btn btn-warning btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#updateModal<?= $record['id']  ?>">
+                                        Editar
+                                    </button>
+                                <?php endif; ?>
                                 <div
                                     class="modal fade"
                                     id="updateModal<?= $record['id']  ?>"
@@ -141,6 +159,16 @@ $nombreTabla = match ($_SESSION['current_table']) {
                                                     case 'team':
                                                         include "./src/Views/Templates/updateTeam.php";
                                                         break;
+                                                    case 'project':
+                                                        include "./src/Views/Templates/updateProject.php";
+                                                        break;
+                                                    case 'task':
+                                                        include "./src/Views/Templates/updateTask.php";
+                                                        break;
+                                                    default:
+                                                        $_SESSION['ERROR'] = "<strong>ERROR: </strong>Esta tabla no existe en la base de datos.";
+                                                        header("index.php?controller=auth&action=logout");
+                                                        exit;
                                                 }
                                                 ?>
                                             </div>
@@ -148,20 +176,16 @@ $nombreTabla = match ($_SESSION['current_table']) {
                                     </div>
                                 </div>
 
-                                <!-- Optional: Place to the bottom of scripts -->
+                                <?php if (AuthService::hasRole('Superadmin')): ?>
+                                    <button
+                                        type="button"
+                                        class="btn btn-danger btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal<?= $record['id']  ?>">
+                                        Eliminar
+                                    </button>
+                                <?php endif; ?>
 
-
-                                <!-- Modal trigger button -->
-                                <button
-                                    type="button"
-                                    class="btn btn-danger btn-sm"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#deleteModal<?= $record['id']  ?>">
-                                    Eliminar
-                                </button>
-
-                                <!-- Modal Body -->
-                                <!-- if you want to close by clicking outside the modal, delete the last endpoint:data-bs-backdrop and data-bs-keyboard -->
                                 <div
                                     class="modal fade"
                                     id="deleteModal<?= $record['id']  ?>"
@@ -187,10 +211,10 @@ $nombreTabla = match ($_SESSION['current_table']) {
                                                     aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">¿Desea eliminar el registro?</div>
-                                            <form action="index.php?controller=dashboard&action=delete&id=<?= $record['id'] ?>" method="post">
+                                            <form action="index.php?controller=dashboard&action=delete&id=<?= htmlspecialchars($record['id']) ?>" method="post">
                                                 <input type="hidden" name="table_name" value="<?= $_SESSION['current_table'] ?>">
-                                                <input type="hidden" name="id" value="<?= $record['id'] ?>">
-
+                                                <input type="hidden" name="id" value="<?= htmlspecialchars($record['id']) ?>">
+                                                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                                                 <div class="modal-footer">
                                                     <button
                                                         type="button"
@@ -223,10 +247,26 @@ $nombreTabla = match ($_SESSION['current_table']) {
 
 
         <?php endif; ?>
+        <?php
+        require_once "./src/Utils/alerts.php";
+        if (isset($_SESSION['ERROR'])) {
+            throwErrorAlert();
+            unset($_SESSION['ERROR']);
+        }
+        if (isset($_SESSION['SUCCESS'])) {
+            throwCreateAlert();
+            unset($_SESSION['SUCCESS']);
+        }
+        if (isset($_SESSION['INFO'])) {
+            throwUpdateAlert();
+            unset($_SESSION['INFO']);
+        }
+        ?>
     </div>
 
-
+    <?php include "./src/Views/Templates/footer.php"; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="public/validate.js"></script>
 
 </body>
 

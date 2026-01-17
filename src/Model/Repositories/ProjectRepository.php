@@ -19,11 +19,11 @@ class ProjectRepository extends Repository
         $stmt->execute([
             ':name' => $project->getName(),
             ':description' => $project->getDescription(),
-            ':started_at' => $project->getStartedAt()->format('Y-m-d H:i:s'),
-            ':due_date' => $project->getDueDate()->format('Y-m-d H:i:s'),
+            ':started_at' => $project->getStartedAt(),
+            ':due_date' => $project->getDueDate(),
             ':assigned_team' => $project->getAssignedTeam()
         ]);
-        return true;
+        return $stmt->rowCount() > 0;
     }
 
     public function readAll(): array|null
@@ -53,6 +53,15 @@ class ProjectRepository extends Repository
         }
         return null;
     }
+
+    public function readIdNames(): array|null
+    {
+        $query = "SELECT id, name FROM $this->table_name";
+        $stmt = $this->connection->prepare($query);
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
     public function update(object $project): bool
     {
         $query = "UPDATE $this->table_name SET name = :name, description = :description, started_at = :started_at, due_date = :due_date, assigned_team = :assigned_team WHERE id = :id";
@@ -60,12 +69,12 @@ class ProjectRepository extends Repository
         $stmt->execute([
             ':name' => $project->getName(),
             ':description' => $project->getDescription(),
-            ':started_at' => $project->getStartedAt()->format('Y-m-d H:i:s'),
-            ':due_date' => $project->getDueDate()->format('Y-m-d H:i:s'),
+            ':started_at' => $project->getStartedAt(),
+            ':due_date' => $project->getDueDate(),
             ':assigned_team' => $project->getAssignedTeam(),
             ':id' => $project->getId()
         ]);
-        return true;
+        return $stmt->rowCount() > 0;
     }
 
     public function delete(int $id): void

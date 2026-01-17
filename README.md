@@ -130,3 +130,4 @@ http://localhost/Pryta/index.php
 
 ```
 6. Utiliza los usuarios de ejemplo o registra nuevos usuarios para probar la aplicación.
+

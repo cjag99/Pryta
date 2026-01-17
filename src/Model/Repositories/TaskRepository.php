@@ -15,15 +15,17 @@ class TaskRepository extends Repository
         if (!$task instanceof Task) {
             throw new \InvalidArgumentException('El objeto a crear debe ser de la clase Tarea.');
         }
-        $query = "INSERT INTO $this->table_name (name, description, state, project_id) VALUES (:name, :description, :state, :project_id)";
+        $query = "INSERT INTO $this->table_name (name, description, state, project_id, started_on, due_date) VALUES (:name, :description, :state, :project_id, :started_on, :due_date)";
         $stmt = $this->connection->prepare($query);
         $stmt->execute([
             ':name' => $task->getName(),
             ':description' => $task->getDescription(),
             ':state' => $task->getState(),
-            ':project_id' => $task->getProjectId()
+            ':project_id' => $task->getProjectId(),
+            ':started_on' => $task->getStartedOn(),
+            ':due_date' => $task->getDueDate()
         ]);
-        return true;
+        return $stmt->rowCount() > 0;
     }
 
     public function readAll(): ?array
@@ -45,29 +47,36 @@ class TaskRepository extends Repository
             return new Task(
                 $result['id'],
                 $result['name'],
+                $result['project_id'],
                 $result['description'],
                 $result['state'],
                 new DateTimeImmutable($result['started_on']),
                 new DateTimeImmutable($result['due_date']),
-                $result['project_id'],
                 $result['member_assigned']
             );
         }
         return null;
     }
 
+
     public function update(object $task): bool
     {
         if (!$task instanceof Task) {
             throw new \InvalidArgumentException('El objeto a actualizar debe ser de la clase Tarea.');
         }
-        $query = "UPDATE $this->table_name SET name = :name, description = :description, state = :state, project_id = :project_id WHERE id = :id";
+        $query = "UPDATE $this->table_name 
+        SET name = :name, description = :description, state = :state, project_id = :project_id,
+        started_on = :started_on, due_date = :due_date, member_assigned = :member_assigned 
+        WHERE id = :id";
         $stmt = $this->connection->prepare($query);
         $stmt->execute([
             ':name' => $task->getName(),
             ':description' => $task->getDescription(),
             ':state' => $task->getState(),
             ':project_id' => $task->getProjectId(),
+            ':started_on' => $task->getStartedOn(),
+            ':due_date' => $task->getDueDate(),
+            ':member_assigned' => $task->getMemberAssigned(),
             ':id' => $task->getId()
         ]);
         return true;

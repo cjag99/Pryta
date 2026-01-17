@@ -58,6 +58,7 @@
                                     </div>
                                 </div>
 
+                                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                                 <div class="col-12">
                                     <div class="d-flex flex-column flex-sm-row gap-2">
                                         <button
@@ -83,9 +84,9 @@
                         <!-- Inicio: zona de mensajes de error -->
                         <div class="mt-3 failLogin">
                             <?php
-                            require_once "./src/Utils/auth_utils.php";
+                            require_once "./src/Utils/alerts.php";
                             if (isset($_SESSION['ERROR'])) {
-                                throwAlert();
+                                throwErrorAlert();
                                 unset($_SESSION['ERROR']);
                             }
 
@@ -104,11 +105,7 @@
     </div>
 
     <!-- Inicio: pie de página -->
-    <footer class="bg-dark text-light py-2 mt-auto">
-        <div class="container text-center small">
-            &copy; 2025 Pryta Tech. Todos los derechos reservados.
-        </div>
-    </footer>
+    <?php include_once 'src/Views/Templates/footer.php'; ?>
     <!-- Fin: pie de página -->
 
     <!-- Scripts: librerías y validación del lado cliente -->

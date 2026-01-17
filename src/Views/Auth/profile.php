@@ -10,8 +10,22 @@
 </head>
 
 <?php include_once 'src/Views/Templates/header.php'; ?>
-
 <div class="container my-5">
+    <?php
+    include_once "src/Utils/alerts.php";
+    if (isset($_SESSION['ERROR'])) {
+        throwErrorAlert();
+        unset($_SESSION['ERROR']);
+    }
+    if (isset($_SESSION['SUCCESS'])) {
+        throwCreateAlert();
+        unset($_SESSION['SUCCESS']);
+    }
+    if (isset($_SESSION['INFO'])) {
+        throwUpdateAlert();
+        unset($_SESSION['INFO']);
+    }
+    ?>
     <div class="row justify-content-center">
         <div class="col-lg-8">
 
@@ -80,6 +94,7 @@
                                 <label for="password_confirmation" class="form-label">Confirmar contraseña</label>
                                 <input type="password" id="password_confirmation" name="password_confirmation" class="form-control">
                             </div>
+                            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                             <div class="col-12">
                                 <button type="submit" class="btn btn-primary w-100">Actualizar perfil</button>
                             </div>
@@ -100,9 +115,11 @@
         </div> <!-- fin col -->
     </div> <!-- fin row -->
 </div> <!-- fin container -->
+<?php include "./src/Views/Templates/footer.php"; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
+<script src="public/validate.js"></script>
 </body>
 
 </html>

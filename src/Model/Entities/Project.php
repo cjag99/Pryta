@@ -41,9 +41,9 @@ class Project
         $this->description = $description;
     }
 
-    public function getStartedAt(): ?DateTimeImmutable
+    public function getStartedAt(): ?string
     {
-        return $this->started_at;
+        return $this->started_at?->format('Y-m-d');
     }
 
     public function setStartedAt(?DateTimeImmutable $started_at): void
@@ -51,9 +51,9 @@ class Project
         $this->started_at = $started_at;
     }
 
-    public function getDueDate(): ?DateTimeImmutable
+    public function getDueDate(): ?string
     {
-        return $this->due_date;
+        return $this->due_date?->format('Y-m-d');
     }
 
     public function setDueDate(?DateTimeImmutable $due_date): void

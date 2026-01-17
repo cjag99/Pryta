@@ -69,17 +69,6 @@
             </button>
         </form>
         <hr>
-        <h3 class="px-3 me-2">Sistema</h3>
-        <div class="list-group list-group-flush bg-dark">
-
-
-            <a href="index.php?controller=dashboard&action=settings"
-                class="list-group-item list-group-item-action bg-dark text-light border-0">
-                ⚙️ Ajustes
-            </a>
-
-        </div>
-        <hr>
         <h3 class="px-3 me-2">Cuenta</h3>
         <div class="list-group list-group-flush bg-dark">
             <a href="index.php?controller=auth&action=logout"

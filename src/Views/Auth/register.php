@@ -70,6 +70,7 @@
                                     <small id="helpRegConfirm" class="form-text text-muted">La confirmación debe coincidir con la contraseña</small>
                                 </div>
 
+                                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                                 <div class="d-flex gap-2">
                                     <button type="submit" class="btn btn-primary flex-fill">Registrarse</button>
                                     <button type="reset" class="btn btn-outline-light flex-fill">Restablecer</button>
@@ -89,9 +90,7 @@
     </main>
 
     <!-- Inicio: pie de página -->
-    <footer class="bg-dark text-light py-2 mt-auto">
-        <div class="container text-center small">&copy; 2025 Pryta Tech. Todos los derechos reservados.</div>
-    </footer>
+    <?php include_once 'src/Views/Templates/footer.php'; ?>
     <!-- Fin: pie de página -->
 
     <!-- Scripts: librerías y validación del lado cliente -->

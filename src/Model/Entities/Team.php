@@ -27,9 +27,9 @@ class Team
         return $this->description;
     }
 
-    public function getCreationDate(): string
+    public function getCreationDate(): ?string
     {
-        return $this->creation_date->format('Y-m-d');
+        return $this->creation_date?->format('Y-m-d');
     }
 
     public function getTeamLeader(): ?int

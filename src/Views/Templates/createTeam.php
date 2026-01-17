@@ -16,6 +16,11 @@
             <label for="reg_team_leader">Lider de equipo</label>
             <select name="reg_team_leader">
                 <option value="" selected disabled>Seleccione un lider</option>
+                <?php foreach ($auxiliar_data as $user): ?>
+                    <option value="<?= htmlspecialchars($user['id']) ?>">
+                        <?= htmlspecialchars($user['name'] . ' ' . $user['surname'], ENT_QUOTES, 'UTF-8') ?>
+                    </option>
+                <?php endforeach; ?>
             </select>
         </div>
         <div class="mb-3">
@@ -23,6 +28,7 @@
             <input type="radio" name="reg_is_available" value="1" checked>Disponible
             <input type="radio" name="reg_is_available" value="0">No disponible
         </div>
+        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
         <button type="submit" class="btn btn-success">Registrar</button>
         <a href="index.php?controller=dashboard&action=list" class="btn btn-danger">Volver</a>
     </form>

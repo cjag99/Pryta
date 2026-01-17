@@ -37,6 +37,14 @@ class TeamRepository extends Repository
         return $result;
     }
 
+    public function readIdNames(): array|null
+    {
+        $query = "SELECT id, name FROM $this->table_name";
+        $stmt = $this->connection->prepare($query);
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
     public function readOne(int $id): ?object
     {
         $query = "SELECT * FROM $this->table_name WHERE id = :id";

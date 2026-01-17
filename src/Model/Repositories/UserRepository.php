@@ -60,6 +60,22 @@ class UserRepository extends Repository
         }
     }
 
+    public function readIdNames(): array|null
+    {
+        $command = $this->connection->prepare("SELECT id, name, surname FROM $this->table_name");
+        $command->execute();
+        $data = $command->fetchAll(PDO::FETCH_ASSOC);
+        return $data;
+    }
+
+    public function readIdNamesByTeamId(int $teamId): array|null
+    {
+        $command = $this->connection->prepare("SELECT id, name, surname FROM $this->table_name WHERE team_id = :teamId");
+        $command->bindParam(':teamId', $teamId);
+        $command->execute();
+        $data = $command->fetchAll(PDO::FETCH_ASSOC);
+        return $data;
+    }
     public function getByFullName($fullName)
     {
         // Separa el nombre completo en nombre y apellido (solo la primera separación)
