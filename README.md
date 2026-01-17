@@ -5,129 +5,185 @@
 
 # Pryta
 
-[![PHP](https://img.shields.io/badge/PHP-8.2-blue.svg)](https://www.php.net/) 
-[![MySQL](https://img.shields.io/badge/MySQL-8-orange.svg)](https://dev.mysql.com/) 
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+Pryta es un CRUD con arquitectura MVC en PHP que simula un software de gestión de personal y proyectos. Está pensado como base educativa y como prototipo funcional para gestionar usuarios, equipos, proyectos y tareas.
 
-**Pryta** es una aplicación web desarrollada en **PHP** siguiendo el patrón de arquitectura **MVC**.  
-Actualmente implementa un **sistema de autenticación de usuarios** con funcionalidades de **login y registro**, sirviendo como base para una aplicación más grande.
+## Resumen rápido
 
-El objetivo del proyecto es:
+Pryta permite registrar usuarios, crear equipos, asignar proyectos a equipos y gestionar tareas con roles diferenciados: Superadmin, Teamleader y Software Engineer. Interfaz con Bootstrap 5, backend en PHP 8.2 y datos en MySQL 8.
 
-- Practicar y afianzar el uso de la arquitectura **MVC en PHP**
-- Aprender y aplicar conceptos de **autenticación y gestión de usuarios**
-- Construir una **base reutilizable** para futuros proyectos
-- Servir como **proyecto académico**
+## Características principales
 
----
+  - Gestión de Usuarios: registro público, edición de perfil y administración por parte del superadmin.
+  - Gestión de Equipos: creación y asignación de equipos con líderes.
+  - Gestión de Proyectos: proyectos vinculados a equipos.
+  - Gestión de Tareas: creación, asignación y cambio de estado de tareas.
+  - Roles y permisos: Superadmin, Teamleader y Software Engineer con permisos distintos.
+  - Seguridad: autenticación con sesiones, contraseñas hasheadas, validación y sanitización de entradas, uso de consultas preparadas para evitar inyección SQL y protección de archivos sensibles (por ejemplo .env) para entornos de producción.
+  - Interfaz con Bootstrap 5 y lógica en PHP 8.2 sobre Apache; datos en MySQL 8.
+    
+## Requisitos
 
-## Tecnologías utilizadas
+  PHP 8.2 con extensiones PDO o mysqli.
 
-- **PHP 8.2**
-- **MySQL 8**
-- **Apache**
-- **XAMPP** (entorno de desarrollo)
-- **JavaScript** (validación de formularios)
-- **HTML / CSS** (frontend básico)
+  MySQL 8.
 
----
+  Apache (XAMPP recomendado para desarrollo).
 
-## Estructura del proyecto
+  Navegador moderno.
 
-```text
-Pryta/
-│
-├── src/
-│   ├── Config/
-│   ├── Controller/
-│   ├── Model/
-│   │   ├── Entities/
-│   │   └── Repositories/
-│   ├── Services/
-│   └── Views/
-│       ├── Auth/
-│       └── Dashboard/
-│
-├── public/
-│   ├── images/
-│   ├── styles/
-│   │   └── style.css
-│   └── validate.js
-│
-├── database/
-│   └── pryta.sql
-│
-├── index.php
-└── README.md
-```
----
+## Instalación y ejecución local
 
-## Funcionalidades
+1. Clonar el repositorio
+````
+git clone 
+2. 
 
-Actualmente, **Pryta** incluye:
+    Importar la base de datos
 
-- **Registro de usuarios** con contraseña hasheada  
-- **Login de usuarios** con verificación de credenciales  
-- **Gestión de sesiones** (inicio y cierre de sesión)  
-- **Validación de formularios** en el frontend y backend  
-- **Protección contra intentos fallidos de acceso** (control de login attempts)  
+    Abrir phpMyAdmin o cliente MySQL y ejecutar el fichero database/pryta.sql para crear la base de datos y tablas.
 
----
+    Configurar variables de entorno
 
-## Imágenes
+    Copiar .env.example a .env y actualizar los valores de conexión:
 
-<table>
-  <tr>
-    <td align="center">
-      <img src="./public/images/login.jpg" width="100"/><br>
-      login.php
-    </td>
-    <td align="center">
-      <img src="./public/images/home.jpg" width="100"/><br>
-      home.php
-    </td>
-    <td align="center">
-      <img src="./public/images/register.jpg" width="100"/><br>
-      register.php
-    </td>
-  </tr>
-</table>
+Código
 
----
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=pryta
+DB_USERNAME=root
+DB_PASSWORD=
+APP_ENV=local
+APP_DEBUG=true
 
-## Seguridad
+    Iniciar servidor
 
-**Pryta** implementa medidas de seguridad fundamentales:
+    Iniciar XAMPP (Apache + MySQL) y acceder a http://localhost/<ruta-al-proyecto>.
 
-- **Contraseñas hasheadas**: todas las contraseñas se almacenan utilizando `password_hash()` de PHP.  
-- **Control de intentos fallidos**: previene ataques de fuerza bruta registrando intentos de login fallidos.  
-- **Validación y sanitización de inputs**: tanto en frontend como en backend, evitando **SQL Injection** y datos maliciosos.
+Estructura del proyecto
+Código
 
----
+/Pryta
+├─ /app
+│  ├─ /controllers
+│  ├─ /models
+│  └─ /views
+├─ /public
+│  └─ index.php
+├─ /database
+│  └─ pryta.sql
+├─ /assets
+│  ├─ /css
+│  └─ /js
+├─ .env.example
+└─ README.md
 
-## Instalación y uso
+Modelos y campos
 
-1. Instala **XAMPP** o un entorno similar con **PHP 8.2**, **MySQL 8** y **Apache**.  
-2. Copia la carpeta del proyecto en el directorio `htdocs` de XAMPP.
-3. Este proyecto utiliza **variables de entorno** para su configuración, definidas en un archivo `.env`.
-   Después de clonar el repositorio, es necesario crear el archivo `.env` en la raíz del proyecto. Puedes hacerlo tomando como referencia el archivo de ejemplo `.env.example`:
-   ```env
-   DB_HOST="your_database_hostid"
-   DB_PORT="your_port"
-   DB_NAME="pryta"
-   DB_USERNAME="your_username"
-   DB_PASSWORD="your_password"
-   ```
-5. Importa el script SQL ubicado en `database/pryta.sql`. Este script:
-   - Crea la base de datos `pryta`
-   - Crea las tablas necesarias
-   - Inserta dos usuarios de ejemplo  
-6. No es necesario configurar credenciales adicionales en `Database.php`.  
-7. Abre el navegador y navega a:
-```text
+Usuario
 
-http://localhost/Pryta/index.php
+    id; username; nombre; apellido; contraseña; rol; email; verificado; activo; id_equipo
 
-```
-6. Utiliza los usuarios de ejemplo o registra nuevos usuarios para probar la aplicación.
+Equipo
 
+    id; nombre; descripcion; fecha_creacion; id_lider; disponible
+
+Proyecto
+
+    id; nombre; descripcion; fecha_inicio; fecha_fin; id_equipo_asignado
+
+Tarea
+
+    id; nombre; descripcion; estado; fecha_inicio; fecha_fin; id_proyecto; id_miembro_asignado
+
+Roles y autenticación
+
+    Registro público con permisos mínimos.
+
+    Registro interno disponible en la interfaz pero solo accesible por el admin para crear usuarios con permisos superiores.
+
+    Edición de perfil: cada usuario puede modificar su propia información en "Mi perfil".
+
+    Permisos:
+
+        Superadmin: acceso completo a todas las operaciones CRUD.
+
+        Teamleader: puede añadir y modificar tareas.
+
+        Software Engineer: puede modificar el estado de las tareas.
+
+        Lectura: todos los roles pueden realizar SELECT en todas las tablas.
+
+Uso básico
+
+    Registro: crear cuenta pública o que el admin cree usuarios con roles superiores.
+
+    Login: acceder al panel según rol.
+
+    Superadmin: gestionar usuarios, equipos, proyectos y tareas.
+
+    Teamleader: crear y editar tareas, asignar miembros.
+
+    Software Engineer: actualizar estado de tareas.
+
+    Mi perfil: editar datos personales y cambiar contraseña.
+
+Seguridad recomendada
+
+    Hashear contraseñas con password_hash y verificar con password_verify.
+
+    Usar consultas preparadas para evitar inyección SQL.
+
+    Sanitizar y validar todas las entradas del usuario.
+
+    Proteger archivos sensibles y no exponer .env en producción.
+
+    Configurar HTTPS en entornos de producción.
+
+Tests
+
+No hay tests automatizados incluidos actualmente. Se recomienda añadir PHPUnit para pruebas unitarias y de integración.
+Buenas prácticas sugeridas
+
+    Implementar middleware de autorización para centralizar permisos.
+
+    Añadir paginación y filtros en listados grandes.
+
+    Crear seeders para datos de ejemplo reproducibles.
+
+    Añadir registro de auditoría para cambios críticos.
+
+    Implementar API REST si se requiere integración externa.
+
+Roadmap
+
+    Añadir tests automatizados con PHPUnit.
+
+    Mejorar sistema de permisos con middleware.
+
+    Implementar notificaciones por email para asignaciones y cambios de estado.
+
+    Añadir paginación, búsqueda y filtros avanzados.
+
+    Crear una API REST y documentación OpenAPI.
+
+Contribuciones
+
+    Abrir un issue describiendo el bug o la mejora.
+
+    Crear una branch con prefijo feature/ o fix/.
+
+    Hacer pull request con descripción clara de los cambios.
+
+    Mantener estilo de código y documentar cambios en la base de datos.
+
+Licencia
+
+Añade aquí la licencia del proyecto (por ejemplo MIT o GPL-3.0). Si no hay licencia, considera añadir una para aclarar el uso y contribución.
+Badges recomendados
+
+    Build (CI)
+
+    Coverage (cuando haya tests)
+
+    License
