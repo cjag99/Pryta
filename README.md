@@ -74,7 +74,7 @@ Pryta
         ├───Dashboard
         └───Templates
 ````
-Modelos y campos
+2. Modelos y campos
 
 Usuario
 
