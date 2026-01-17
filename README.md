@@ -76,21 +76,54 @@ Pryta
 ````
 2. Modelos y campos
 
-Usuario
+```mermaid
+classDiagram
+   class User{
+    +int id
+    +string username
+    +string name
+    +string surname
+    +string password
+    +enum role
+    +string email
+    +bool verified
+    +bool active
+    +int team_id
+   }
 
-    id; username; nombre; apellido; contraseña; rol; email; verificado; activo; id_equipo
+   class Team{
+    +int id
+    +string name
+    +string description
+    +Datetime creation_date
+    +int team_leader
+    +bool is_available
+   }
 
-Equipo
+   class Project{
+    +int id
+    +string name
+    +string description
+    +Date started_At
+    +Date due_date
+    +int assigned_team
+   }
 
-    id; nombre; descripcion; fecha_creacion; id_lider; disponible
-
-Proyecto
-
-    id; nombre; descripcion; fecha_inicio; fecha_fin; id_equipo_asignado
-
-Tarea
-
-    id; nombre; descripcion; estado; fecha_inicio; fecha_fin; id_proyecto; id_miembro_asignado
+   class Task{
+    +int id
+    +string name
+    +string description
+    +enum state
+    +Date started_on
+    +Date due_date
+    +int project_id
+    +int member_assigned
+   }
+   User "1"-->"1" Team : pertenece a
+   Team "1"-->"1" User: es liderado por
+   Project "1"-->"1" Team: es asignado a
+   Task "*"-->"1" Project: pertenece a 
+```
 
 Roles y autenticación
 
