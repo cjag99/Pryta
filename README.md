@@ -34,27 +34,14 @@ Pryta permite registrar usuarios, crear equipos, asignar proyectos a equipos y g
 ## Instalación y ejecución local
 
 1. Clonar el repositorio
-````
-git clone 
-2. 
+```bash
 
-    Importar la base de datos
+git clone https://github.com/cjag99/Pryta.git
+```
+2. Importar la base de datos. Para ello ejecute en su servicio de base de datos el fichero ``pryta.sql`` en la carpeta ``database``.
+3. Configurar variables de entorno: Las variables de entorno en este proyecto son requeridas por un fichero ``.env.`` Deberá crearlo siguiendo la estructura proporcionada por el siguiente fichero ``.env.example``:
 
-    Abrir phpMyAdmin o cliente MySQL y ejecutar el fichero database/pryta.sql para crear la base de datos y tablas.
-
-    Configurar variables de entorno
-
-    Copiar .env.example a .env y actualizar los valores de conexión:
-
-Código
-
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=pryta
-DB_USERNAME=root
-DB_PASSWORD=
-APP_ENV=local
-APP_DEBUG=true
+   
 
     Iniciar servidor
 
