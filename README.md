@@ -23,13 +23,13 @@ Pryta permite registrar usuarios, crear equipos, asignar proyectos a equipos y g
     
 ## Requisitos
 
-  PHP 8.2 con extensiones PDO o mysqli.
+ - PHP 8.2 con extensiones PDO o mysqli.
 
-  MySQL 8.
+  - MySQL 8.
 
-  Apache (XAMPP recomendado para desarrollo).
+  - Apache (XAMPP recomendado para desarrollo).
 
-  Navegador moderno.
+
 
 ## Instalación y ejecución local
 
