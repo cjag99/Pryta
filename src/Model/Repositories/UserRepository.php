@@ -5,13 +5,11 @@ require_once "./src/Config/Database.php";
 require_once "./src/Model/Entities/User.php";
 require_once "./src/Model/Repositories/Repository.php";
 /**
- * Repositorio para operaciones sobre la tabla `user`.
+ * Clase que representa un repositorio de usuarios.
  *
- * Métodos principales:
- * - getById: devuelve un usuario por su id o null si no existe.
- * - getByFullName: busca por nombre y apellido.
- * - insert: inserta un nuevo usuario (devuelve true/false).
- * - login: busca por username y verifica la contraseña.
+ * Hereda de {@link Repository} y se encarga de realizar operaciones CRUD sobre la tabla de usuarios.
+ *
+ * @package Pryta\Model\Repositories
  */
 class UserRepository extends Repository
 {
@@ -26,6 +24,11 @@ class UserRepository extends Repository
     }
 
 
+    /**
+     * Lee todas las filas de la tabla de usuarios.
+     *
+     * @return array|null Un array asociativo con todos los usuarios o null si no hay resultados.
+     */
     public function readAll(): array|null
     {
         $command = $this->connection->prepare("SELECT * FROM user");
@@ -34,6 +37,13 @@ class UserRepository extends Repository
 
         return $data;
     }
+    /**
+     * Lee una fila de la tabla de usuarios por su id.
+     *
+     * @param int $userID Identificador del usuario a leer.
+     *
+     * @return ?object Un objeto de la clase User si se encuentra, null en caso contrario.
+     */
     public function readOne(int $userID): ?object
     {
         // Preparar consulta para buscar por id y devolver la fila como asociado
@@ -60,6 +70,11 @@ class UserRepository extends Repository
         }
     }
 
+    /**
+     * Lee todas las filas de la tabla de usuarios con solo id, nombre y apellido.
+     *
+     * @return array|null Un array asociativo con todos los usuarios o null si no hay resultados.
+     */
     public function readIdNames(): array|null
     {
         $command = $this->connection->prepare("SELECT id, name, surname FROM $this->table_name");
@@ -68,6 +83,13 @@ class UserRepository extends Repository
         return $data;
     }
 
+    /**
+     * Lee todas las filas de la tabla de usuarios que pertenecen a un equipo en particular con solo id, nombre y apellido.
+     *
+     * @param int $teamId Identificador del equipo al que pertenecen los usuarios.
+     *
+     * @return array|null Un array asociativo con todos los usuarios del equipo o null si no hay resultados.
+     */
     public function readIdNamesByTeamId(int $teamId): array|null
     {
         $command = $this->connection->prepare("SELECT id, name, surname FROM $this->table_name WHERE team_id = :teamId");
@@ -76,6 +98,13 @@ class UserRepository extends Repository
         $data = $command->fetchAll(PDO::FETCH_ASSOC);
         return $data;
     }
+    /**
+     * Devuelve un usuario por su nombre completo (nombre y apellido).
+     *
+     * @param string $fullName Nombre completo del usuario a buscar.
+     *
+     * @return ?User La entidad User si se encuentra, null en caso contrario.
+     */
     public function getByFullName($fullName)
     {
         // Separa el nombre completo en nombre y apellido (solo la primera separación)
@@ -104,6 +133,13 @@ class UserRepository extends Repository
             );
     }
 
+    /**
+     * Comprueba si existe un usuario en la base de datos con el id indicado.
+     *
+     * @param User $user La entidad User a comprobar.
+     *
+     * @return bool True si existe al menos una fila con el id indicado, false en caso contrario.
+     */
     public function userExists(User $user): bool
     {
         // Comprueba existencia por id (devuelve true si hay al menos una fila)
@@ -114,6 +150,14 @@ class UserRepository extends Repository
         return $command->fetchColumn() > 0;
     }
 
+    /**
+     * Inserta un nuevo usuario en la tabla `user`.
+     * Devuelve true si la inserción tuvo éxito, false en caso contrario.
+     *
+     * @param User $user La entidad User a insertar.
+     *
+     * @return bool True si la inserción tuvo éxito, false en caso contrario.
+     */
     public function create(object $user): bool
     {
         // Inserta un nuevo usuario en la tabla `user`.
@@ -141,6 +185,14 @@ class UserRepository extends Repository
 
         return $stmt->execute($params);
     }
+    /**
+     * Comprueba credenciales de un usuario y devuelve la entidad User asociada si son válidos.
+     *
+     * @param string $username Nombre de usuario a comprobar.
+     * @param string $passwd Contraseña a comprobar.
+     *
+     * @return User|false La entidad User asociada si las credenciales son válidas, false en caso contrario.
+     */
     public function login(string $username, string $passwd): User|false
     {
         // Buscar usuario por nombre de usuario
@@ -176,6 +228,13 @@ class UserRepository extends Repository
         }
     }
 
+    /**
+     * Actualiza un usuario existente en la tabla `user`.
+     *
+     * @param User $entity La entidad User a actualizar.
+     *
+     * @return bool True si la actualización tuvo éxito, false en caso contrario.
+     */
     public function update(object $entity): bool
     {
         $sql = "UPDATE user
@@ -207,6 +266,11 @@ class UserRepository extends Repository
         return $stmt->rowCount() > 0;
     }
 
+    /**
+     * Elimina un usuario de la tabla `user`.
+     *
+     * @param int $id El ID del usuario a eliminar.
+     */
     public function delete(int $id): void
     {
 
@@ -216,6 +280,13 @@ class UserRepository extends Repository
         header("Location: index.php?controller=dashboard&action=list");
     }
 
+    /**
+     * Actualiza la información personal de un usuario en la tabla `user`.
+     *
+     * @param object $entity La entidad User a actualizar.
+     *
+     * @return bool True si la actualización tuvo éxito, false en caso contrario.
+     */
     public function updateProfile(object $entity): bool
     {
         $sql = "UPDATE user

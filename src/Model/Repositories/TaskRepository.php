@@ -3,13 +3,34 @@ require_once "./src/Config/Database.php";
 require_once "./src/Model/Entities/Task.php";
 require_once "./src/Model/Repositories/Repository.php";
 
+/**
+ * Clase que representa un repositorio de tareas.
+ *
+ * Esta clase hereda de {@link Repository} y se encarga de realizar operaciones CRUD sobre la tabla de tareas.
+ *
+ * @package Pryta\Model\Repositories
+ */
 class TaskRepository extends Repository
 {
+    /**
+     * Constructor del repositorio de tareas.
+     *
+     * @param PDO $connection Conexión a la base de datos
+     */
     public function __construct(PDO $connection)
     {
         return parent::__construct('task', $connection);
     }
 
+    /**
+     * Crea una nueva tarea en la base de datos.
+     *
+     * @param Task $task Tarea a crear.
+     *
+     * @return bool Verdadero que indica si la tarea se cre o correctamente.
+     *
+     * @throws \InvalidArgumentException Si el objeto a crear no es de la clase Tarea.
+     */
     public function create(object $task): bool
     {
         if (!$task instanceof Task) {
@@ -28,6 +49,11 @@ class TaskRepository extends Repository
         return $stmt->rowCount() > 0;
     }
 
+    /**
+     * Lee todas las tareas en la base de datos.
+     *
+     * @return array|null Un array asociativo con las tareas o null si no hay resultados.
+     */
     public function readAll(): ?array
     {
         $query = "SELECT * FROM $this->table_name";
@@ -37,6 +63,13 @@ class TaskRepository extends Repository
         return $result;
     }
 
+    /**
+     * Lee una tarea en la base de datos por su id.
+     *
+     * @param int $id Identificador de la tarea a leer.
+     *
+     * @return ?object Un objeto de la clase Tarea si se encuentra, null en caso contrario.
+     */
     public function readOne(int $id): ?object
     {
         $query = "SELECT * FROM $this->table_name WHERE id = :id";
@@ -59,6 +92,15 @@ class TaskRepository extends Repository
     }
 
 
+    /**
+     * Actualiza una tarea en la base de datos.
+     *
+     * @param object $task El objeto de la clase Tarea a actualizar.
+     *
+     * @return bool True si la tarea se actualizó correctamente, false en caso contrario.
+     *
+     * @throws \InvalidArgumentException Si el objeto a actualizar no es de la clase Tarea.
+     */
     public function update(object $task): bool
     {
         if (!$task instanceof Task) {
@@ -81,6 +123,12 @@ class TaskRepository extends Repository
         ]);
         return true;
     }
+
+    /**
+     * Elimina una tarea de la base de datos.
+     *
+     * @param int $id Identificador de la tarea a eliminar.
+     */
 
     public function delete(int $id): void
     {

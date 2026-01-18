@@ -15,6 +15,13 @@ function throwErrorAlert()
     }
 }
 
+/**
+ * Muestra una alerta de éxito si existe un mensaje en la sesión.
+ *
+ * - Usa las clases de Bootstrap `alert alert-success` para el estilo.
+ * - Nota: se asume que el mensaje en `$_SESSION['SUCCESS']` ya está saneado
+ *   antes de almacenarlo para evitar vulnerabilidades XSS.
+ */
 function throwCreateAlert()
 {
     // Si hay una inserción correcta en sesión, lo mostramos dentro de un div con clase alert
@@ -23,6 +30,13 @@ function throwCreateAlert()
     }
 }
 
+/**
+ * Muestra una alerta de actualización si existe un mensaje en la sesión.
+ *
+ * - Usa las clases de Bootstrap `alert alert-info` para el estilo.
+ * - Nota: se asume que el mensaje en `$_SESSION['INFO']` ya está saneado
+ *   antes de almacenarlo para evitar vulnerabilidades XSS.
+ */
 function throwUpdateAlert()
 {
     // Si hay un update correcto en sesión, lo mostramos dentro de un div con clase alert
