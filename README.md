@@ -140,9 +140,11 @@ classDiagram
   - Register: Registro de usuarios nuevos con permisos mínimos.
     ![Register](public/images/register.jpg)
   - Home: Es la vista inicial del panel de administración. A través del menú desplegable lateral se puede acceder a las listas de las tablas.
-    ![Home](public/imamges/home.jpg)
+    ![Home](public/images/home.jpg)
   - List: Es la vista que crea una tabla que se rellena dinámicamente para cada tabla de la base de datos. Contiene botones que abren modales para los distintos formularios de las operaciones ``CRUD``.
+    ![List](public/images/list.jpg)
   - Profile: Es la vista que muestra la información del usuario logueado, así como un pequeño formulario para actualizar su información personal.
+    ![Profile](public/images/profile.jpg)
 
 ## Implementación de seguridad:
 1. Hasheado de contraseñas: Al instanciar a la entidad ``User`` se usa un ``password_hash``:
