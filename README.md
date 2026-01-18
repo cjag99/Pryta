@@ -5,129 +5,260 @@
 
 # Pryta
 
-[![PHP](https://img.shields.io/badge/PHP-8.2-blue.svg)](https://www.php.net/) 
-[![MySQL](https://img.shields.io/badge/MySQL-8-orange.svg)](https://dev.mysql.com/) 
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+Pryta es un CRUD con arquitectura MVC en PHP que simula un software de gestión de personal y proyectos. Está pensado como base educativa y como prototipo funcional para gestionar usuarios, equipos, proyectos y tareas.
 
-**Pryta** es una aplicación web desarrollada en **PHP** siguiendo el patrón de arquitectura **MVC**.  
-Actualmente implementa un **sistema de autenticación de usuarios** con funcionalidades de **login y registro**, sirviendo como base para una aplicación más grande.
+## Resumen rápido
 
-El objetivo del proyecto es:
+Pryta permite registrar usuarios, crear equipos, asignar proyectos a equipos y gestionar tareas con roles diferenciados: Superadmin, Teamleader y Software Engineer. Interfaz con Bootstrap 5, backend en PHP 8.2 y datos en MySQL 8.
 
-- Practicar y afianzar el uso de la arquitectura **MVC en PHP**
-- Aprender y aplicar conceptos de **autenticación y gestión de usuarios**
-- Construir una **base reutilizable** para futuros proyectos
-- Servir como **proyecto académico**
+## Características principales
 
----
+  - Gestión de Usuarios: registro público, edición de perfil y administración por parte del superadmin.
+  - Gestión de Equipos: creación y asignación de equipos con líderes.
+  - Gestión de Proyectos: proyectos vinculados a equipos.
+  - Gestión de Tareas: creación, asignación y cambio de estado de tareas.
+  - Roles y permisos: Superadmin, Teamleader y Software Engineer con permisos distintos.
+  - Seguridad: autenticación con sesiones, contraseñas hasheadas, validación y sanitización de entradas, uso de consultas preparadas para evitar inyección SQL y protección de archivos sensibles (por ejemplo .env) para entornos de producción.
+  - Interfaz con Bootstrap 5 y lógica en PHP 8.2 sobre Apache; datos en MySQL 8.
+    
+## Requisitos
 
-## Tecnologías utilizadas
+  PHP 8.2 con extensiones PDO o mysqli.
 
-- **PHP 8.2**
-- **MySQL 8**
-- **Apache**
-- **XAMPP** (entorno de desarrollo)
-- **JavaScript** (validación de formularios)
-- **HTML / CSS** (frontend básico)
+  MySQL 8.
 
----
+  Apache (XAMPP recomendado para desarrollo).
+
+  Navegador moderno.
+
+## Instalación y ejecución local
+
+1. Clonar el repositorio
+````bash
+
+git clone https://github.com/cjag99/Pryta.git
+`````
+2. Importar la base de datos. Para ello ejecute en su servicio de base de datos el fichero ``pryta.sql`` en la carpeta ``database``.
+3. Configurar variables de entorno: Las variables de entorno en este proyecto son requeridas por un fichero ``.env.`` Deberá crearlo siguiendo la estructura proporcionada por el siguiente fichero ``.env.example``:
+````env
+DB_HOST="database_hostid"
+DB_PORT="your_port"
+DB_NAME="pryta"
+DB_USERNAME="your_username"
+DB_PASSWORD="your_password"
+````
+4. Iniciar su servidor (Apache/XAMPP/Laragon) y acceda a ``https://localhost/Pryta/``.
 
 ## Estructura del proyecto
+1. Estructura de carpetas:
+````
+Pryta
+├───index.php
+├───.env
+├───.env.example
+├───database
+├───public
+│   ├───images
+|   ├───validate.js
+│   └───styles
+└───src
+    ├───Config
+    ├───Controller
+    ├───Model
+    │   ├───Entities
+    │   └───Repositories
+    ├───Services
+    ├───Utils
+    └───Views
+        ├───Auth
+        ├───Dashboard
+        └───Templates
+````
+2. Modelos y campos
 
-```text
-Pryta/
-│
-├── src/
-│   ├── Config/
-│   ├── Controller/
-│   ├── Model/
-│   │   ├── Entities/
-│   │   └── Repositories/
-│   ├── Services/
-│   └── Views/
-│       ├── Auth/
-│       └── Dashboard/
-│
-├── public/
-│   ├── images/
-│   ├── styles/
-│   │   └── style.css
-│   └── validate.js
-│
-├── database/
-│   └── pryta.sql
-│
-├── index.php
-└── README.md
+```mermaid
+classDiagram
+   class User{
+    +int id
+    +string username
+    +string name
+    +string surname
+    +string password
+    +enum role
+    +string email
+    +bool verified
+    +bool active
+    +int team_id
+   }
+
+   class Team{
+    +int id
+    +string name
+    +string description
+    +Datetime creation_date
+    +int team_leader
+    +bool is_available
+   }
+
+   class Project{
+    +int id
+    +string name
+    +string description
+    +Date started_At
+    +Date due_date
+    +int assigned_team
+   }
+
+   class Task{
+    +int id
+    +string name
+    +string description
+    +enum state
+    +Date started_on
+    +Date due_date
+    +int project_id
+    +int member_assigned
+   }
+   User "1"-->"1" Team : pertenece a
+   Team "1"-->"1" User: es liderado por
+   Project "1"-->"1" Team: es asignado a
+   Task "*"-->"1" Project: pertenece a 
 ```
----
 
-## Funcionalidades
+## Roles y autenticación
 
-Actualmente, **Pryta** incluye:
+  1. Roles: Existe un registro público que crea usuarios permisos mínimos. Dentro de la página existe un registro interno en la tabla users, que es solo accesible por usuarios con el rol más alto. Este registro permite crear usuarios con permisos superiores. Adicionalmente, cada usuario puede modificar su información personal y su contraseña de la vista ``Mi perfil``.
+  2. Niveles de permisos:
+     - Superadmin: Acceso completo a todalas las operaciones CRUD.
+     - Team Leader: Pueder hacer SELECT en todo, e INSERT & UPDATE en la tabla ``task``.
+     - Software Engineer: Puede hacer SELECT EN todo y actualizar el campo ``state`` de la tabla ``task``.
 
-- **Registro de usuarios** con contraseña hasheada  
-- **Login de usuarios** con verificación de credenciales  
-- **Gestión de sesiones** (inicio y cierre de sesión)  
-- **Validación de formularios** en el frontend y backend  
-- **Protección contra intentos fallidos de acceso** (control de login attempts)  
+## Vistas del usuario
 
----
+  - Login: Formulario básico de acceso al panel de administración.
+    ![Login](public/images/login.jpg)
+  - Register: Registro de usuarios nuevos con permisos mínimos.
+    ![Register](public/images/register.jpg)
+  - Home: Es la vista inicial del panel de administración. A través del menú desplegable lateral se puede acceder a las listas de las tablas.
+    ![Home](public/images/home.jpg)
+  - List: Es la vista que crea una tabla que se rellena dinámicamente para cada tabla de la base de datos. Contiene botones que abren modales para los distintos formularios de las operaciones ``CRUD``.
+    ![List](public/images/list.jpg)
+  - Profile: Es la vista que muestra la información del usuario logueado, así como un pequeño formulario para actualizar su información personal.
+    ![Profile](public/images/profile.jpg)
 
-## Imágenes
-
-<table>
-  <tr>
-    <td align="center">
-      <img src="./public/images/login.jpg" width="100"/><br>
-      login.php
-    </td>
-    <td align="center">
-      <img src="./public/images/home.jpg" width="100"/><br>
-      home.php
-    </td>
-    <td align="center">
-      <img src="./public/images/register.jpg" width="100"/><br>
-      register.php
-    </td>
-  </tr>
-</table>
-
----
-
-## Seguridad
-
-**Pryta** implementa medidas de seguridad fundamentales:
-
-- **Contraseñas hasheadas**: todas las contraseñas se almacenan utilizando `password_hash()` de PHP.  
-- **Control de intentos fallidos**: previene ataques de fuerza bruta registrando intentos de login fallidos.  
-- **Validación y sanitización de inputs**: tanto en frontend como en backend, evitando **SQL Injection** y datos maliciosos.
-
----
-
-## Instalación y uso
-
-1. Instala **XAMPP** o un entorno similar con **PHP 8.2**, **MySQL 8** y **Apache**.  
-2. Copia la carpeta del proyecto en el directorio `htdocs` de XAMPP.
-3. Este proyecto utiliza **variables de entorno** para su configuración, definidas en un archivo `.env`.
-   Después de clonar el repositorio, es necesario crear el archivo `.env` en la raíz del proyecto. Puedes hacerlo tomando como referencia el archivo de ejemplo `.env.example`:
-   ```env
-   DB_HOST="your_database_hostid"
-   DB_PORT="your_port"
-   DB_NAME="pryta"
-   DB_USERNAME="your_username"
-   DB_PASSWORD="your_password"
+## Implementación de seguridad:
+1. Hasheado de contraseñas: Al instanciar a la entidad ``User`` se usa un ``password_hash``:
+   
+   ```php
+    public function __construct(
+        int $id,
+        string $username,
+        string $name,
+        string $surname,
+        string $passwd,
+        string $role = UserRole::SOFTWARE_ENGINEER->value,
+        string $email,
+        bool $verified = false,
+        bool $active = true,
+        ?int $team_id = null
+    ) {
+        $this->id = $id;
+        $this->username = $username;
+        $this->name = $name;
+        $this->surname = $surname;
+        $this->passwd = password_hash($passwd, PASSWORD_DEFAULT);
+        $this->role = $role;
+        $this->email = $email;
+        $this->verified = $verified;
+        $this->active = $active;
+        $this->team_id = $team_id;
+    }
    ```
-5. Importa el script SQL ubicado en `database/pryta.sql`. Este script:
-   - Crea la base de datos `pryta`
-   - Crea las tablas necesarias
-   - Inserta dos usuarios de ejemplo  
-6. No es necesario configurar credenciales adicionales en `Database.php`.  
-7. Abre el navegador y navega a:
-```text
+    Y posteriormente para verificar el login usa la función ``password_varify``:
+   
+    ```php
+    public function verifyPassword($passwd): bool
+        {
+            return password_verify($passwd, $this->getPasswd());
+        }
+     ```
+2. Escapado de caracteres HTML y sanitización: Con esto se pretende prevenir los posibles ataques XSS o ataques por inyecciones de código maliciosas. Para ello se usa el método estático ``sanitizeInput()`` de la clase ``ValidationService``:
+   ```php
+   public static function sanitizeInput($data){
+        // Quita espacios al inicio y al final
+        $data = trim($data);
+        // Elimina backslashes (por si existen)
+        $data = stripslashes($data);
+        // Escapa caracteres especiales para salida HTML (UTF-8)
+        $data = htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
+        return $data;
+    }
+   ```
+3. Generación de tokens CSRF: Existe una clase entera llamada ``CSRFService`` dedicada a la generación y comprobación de tokens CSRF para evitar posibles ataques Croos-Site Request Forgery. En cada formulario del sitio se incluyen inputs tipo hidden para ir mandando dichos tokens al servidor:
+   ```php
+   public static function validateCSRFToken(){
+        // Comprobamos que el token esté presente tanto en POST como en la sesión
+        if(!isset($_POST['csrf_token'])|| !isset($_SESSION['csrf_token'])){
+            return false;
+        }
+        // hash_equals realiza una comparación en tiempo constante (segura frente a ataques por temporización)
+        return hash_equals($_SESSION['csrf_token'], $_POST['csrf_token']);
+    }
+   ```
+4. Establecer un nº limitado de intentos de inicio de sesión: Con la clase ``AuthService`` se establecen valores inmutables de intentos de sesión y métodos que se invocan en cada intento de hacer login. Si llegas al límite se le bloquea el login al usuario durante un tiempo no superior a 15 minutos:
+   ```php
+   public static function checkLoginAttempts()
+    {
 
-http://localhost/Pryta/index.php
+        // Inicializamos contador y marca temporal si no existen
+        if (!isset($_SESSION['login_attempts'])) {
+            $_SESSION['login_attempts'] = 0;
+            $_SESSION['first_attempt'] = time();
+        }
 
-```
-6. Utiliza los usuarios de ejemplo o registra nuevos usuarios para probar la aplicación.
+        // Si alcanzamos el número máximo de intentos, comprobamos el tiempo de bloqueo
+        if ($_SESSION['login_attempts'] >= self::MAX_LOGIN_ATTEMPTS) {
+            $time_passed = time() - $_SESSION['first_attempt'];
+            if ($time_passed < self::LOCKOUT_TIME) {
+                // Calculamos minutos restantes y devolvemos el estado bloqueado
+                $blocked_time = ceil((self::LOCKOUT_TIME - $time_passed) / 60);
+                return [
+                    'blocked' => true,
+                    'message' => "Demasiados intentos. Espere {$blocked_time} minutos e inténtelo de nuevo",
+                    'blocked_time' => $blocked_time
+                ];
+            } else {
+                // Se ha cumplido el periodo de bloqueo: reseteamos para permitir nuevos intentos
+                self::resetLoginAttempts();
+            }
+        }
+
+        // No bloqueado: devolvemos valores por defecto
+        return [
+            'blocked' => false,
+            'message' => "",
+            'blocked_time' => 0
+        ];
+    ``` 
+## Flujo del servidor
+El flujo del sitio está totalmente definido por 3 elementos:
+- index.php: Es el enrutador, el que establece los 2 controladores y el que indica que acciones pueden y deben hacer cada uno de ellos. También es aquí donde empieza la sesión
+- AuthController: Se encarga de tareas relacionadas con el registro  de usuarios e inicio de sesión. También muestra la vista de ``Profile``.
+- DashboardController: Es el que realiza las operaciones ``CRUD``.
+
+  ```mermaid
+  flowchart TD
+    A[Index.php] --> B[AuthController]
+    B -->|Credenciales válidas| A
+    B -->|Credenciales inválidas| F[Mensaje de error]
+
+  A --> C[DashboardController]
+    F-->B
+    B-->A 
+
+    C --> D[Crear / Editar / Borrar / Leer]
+    D --> C
+
+    C --> A
+  ```
 
