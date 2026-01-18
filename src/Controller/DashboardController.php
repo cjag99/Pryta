@@ -4,15 +4,33 @@ declare(strict_types=1);
 require_once "./src/Model/Entities/UserException.php";
 require_once "./src/Services/ValidationService.php";
 require_once "./src/Services/CSRFService.php";
+/**
+ * Controlador de la vista de dashboard.
+ *
+ * Este controlador se encarga de mostrar la vista de dashboard, que incluye
+ * la lista de usuarios, equipos, proyectos y tareas.
+ *
+ * También se encarga de procesar las solicitudes de creación, actualización y eliminación
+ * de registros en las tablas de usuarios, equipos, proyectos y tareas.
+ */
 class DashboardController
 {
+    /**
+     * Constructor: recibe la conexión PDO (inyección de dependencias).
+     * @param PDO $connection Conexión a la base de datos
+     */
     public function __construct(
         private PDO $connection
     ) {}
-    public function home()
-    {
-        include __DIR__ . "/../Views/Dashboard/home.php";
-    }
+    /**
+     * Inicializa repositorios auxiliares para una tabla determinada.
+     * 
+     * Compara el nombre de la tabla con los repositorios auxiliares correspondientes y devuelve los mismos.
+     * 
+     * @param string $table_name El nombre de la tabla para comparar con los repositorios auxiliares
+     * 
+     * @return array Un array que contiene los repositorios auxiliares y sus datos correspondientes
+     */
     private function launchAuxiliars($table_name)
     {
         $auxiliary_repositories = match ($table_name) {
@@ -29,6 +47,11 @@ class DashboardController
         };
         return [$auxiliary_repositories, $auxiliar_data];
     }
+    /**
+     * Muestra todos los registros de la tabla seleccionada
+     * 
+     * @return void
+     */
     public function list()
     {
         $allowed_tables = [
@@ -66,6 +89,15 @@ class DashboardController
     }
 
 
+    /**
+     * Crea un registro en la base de datos según la tabla actual.
+     * Se valida el token CSRF y se comprueba que el usuario esté logueado.
+     * Se utiliza la clase Repository correspondiente a la tabla actual
+     * para crear el registro.
+     *
+     * @throws PDOException Si no hay permisos para crear el registro.
+     * @throws Exception Si no se pudo realizar la operación.
+     */
     public function create()
     {
         // Solo aceptamos POST
@@ -212,6 +244,15 @@ class DashboardController
         }
     }
 
+    /**
+     * Actualiza un registro en la base de datos según la tabla actual.
+     * Se valida el token CSRF y se comprueba que el usuario esté logueado.
+     * Se utiliza la clase Repository correspondiente a la tabla actual
+     * para actualizar el registro.
+     *
+     * @throws PDOException Si no hay permisos para actualizar el registro.
+     * @throws Exception Si no se pudo realizar la operación.
+     */
     public function update()
     {
         // Solo aceptamos POST
@@ -386,6 +427,15 @@ class DashboardController
             exit;
         }
     }
+    /**
+     * Elimina un registro de la base de datos según la tabla actual.
+     * Se valida el token CSRF y se comprueba que el usuario esté logueado.
+     * Se utiliza la clase Repository correspondiente a la tabla actual
+     * para eliminar el registro.
+     *
+     * @throws PDOException Si no hay permisos para eliminar el registro.
+     * @throws Exception Si no se pudo realizar la operación.
+     */
     public function delete()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
