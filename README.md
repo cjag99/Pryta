@@ -125,94 +125,135 @@ classDiagram
    Task "*"-->"1" Project: pertenece a 
 ```
 
-Roles y autenticación
+## Roles y autenticación
 
-    Registro público con permisos mínimos.
+  1. Roles: Existe un registro público que crea usuarios permisos mínimos. Dentro de la página existe un registro interno en la tabla users, que es solo accesible por usuarios con el rol más alto. Este registro permite crear usuarios con permisos superiores. Adicionalmente, cada usuario puede modificar su información personal y su contraseña de la vista ``Mi perfil``.
+  2. Niveles de permisos:
+     - Superadmin: Acceso completo a todalas las operaciones CRUD.
+     - Team Leader: Pueder hacer SELECT en todo, e INSERT & UPDATE en la tabla ``task``.
+     - Software Engineer: Puede hacer SELECT EN todo y actualizar el campo ``state`` de la tabla ``task``.
 
-    Registro interno disponible en la interfaz pero solo accesible por el admin para crear usuarios con permisos superiores.
+## Vistas del usuario
 
-    Edición de perfil: cada usuario puede modificar su propia información en "Mi perfil".
+  - Login: Formulario básico de acceso al panel de administración.
+  - Register: Registro de usuarios nuevos con permisos mínimos.
+  - Home: Es la vista inicial del panel de administración. A través del menú desplegable lateral se puede acceder a las listas de las tablas.
+  - List: Es la vista que crea una tabla que se rellena dinámicamente para cada tabla de la base de datos. Contiene botones que abren modales para los distintos formularios de las operaciones ``CRUD``.
+  - Profile: Es la vista que muestra la información del usuario logueado, así como un pequeño formulario para actualizar su información personal.
 
-    Permisos:
+## Implementación de seguridad:
+1. Hasheado de contraseñas: Al instanciar a la entidad ``User`` se usa un ``password_hash``:
+   
+   ```php
+    public function __construct(
+        int $id,
+        string $username,
+        string $name,
+        string $surname,
+        string $passwd,
+        string $role = UserRole::SOFTWARE_ENGINEER->value,
+        string $email,
+        bool $verified = false,
+        bool $active = true,
+        ?int $team_id = null
+    ) {
+        $this->id = $id;
+        $this->username = $username;
+        $this->name = $name;
+        $this->surname = $surname;
+        $this->passwd = password_hash($passwd, PASSWORD_DEFAULT);
+        $this->role = $role;
+        $this->email = $email;
+        $this->verified = $verified;
+        $this->active = $active;
+        $this->team_id = $team_id;
+    }
+   ```
+    Y posteriormente para verificar el login usa la función ``password_varify``:
+   
+    ```php
+    public function verifyPassword($passwd): bool
+        {
+            return password_verify($passwd, $this->getPasswd());
+        }
+     ```
+2. Escapado de caracteres HTML y sanitización: Con esto se pretende prevenir los posibles ataques XSS o ataques por inyecciones de código maliciosas. Para ello se usa el método estático ``sanitizeInput()`` de la clase ``ValidationService``:
+   ```php
+   public static function sanitizeInput($data){
+        // Quita espacios al inicio y al final
+        $data = trim($data);
+        // Elimina backslashes (por si existen)
+        $data = stripslashes($data);
+        // Escapa caracteres especiales para salida HTML (UTF-8)
+        $data = htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
+        return $data;
+    }
+   ```
+3. Generación de tokens CSRF: Existe una clase entera llamada ``CSRFService`` dedicada a la generación y comprobación de tokens CSRF para evitar posibles ataques Croos-Site Request Forgery. En cada formulario del sitio se incluyen inputs tipo hidden para ir mandando dichos tokens al servidor:
+   ```php
+   public static function validateCSRFToken(){
+        // Comprobamos que el token esté presente tanto en POST como en la sesión
+        if(!isset($_POST['csrf_token'])|| !isset($_SESSION['csrf_token'])){
+            return false;
+        }
+        // hash_equals realiza una comparación en tiempo constante (segura frente a ataques por temporización)
+        return hash_equals($_SESSION['csrf_token'], $_POST['csrf_token']);
+    }
+   ```
+4. Establecer un nº limitado de intentos de inicio de sesión: Con la clase ``AuthService`` se establecen valores inmutables de intentos de sesión y métodos que se invocan en cada intento de hacer login. Si llegas al límite se le bloquea el login al usuario durante un tiempo no superior a 15 minutos:
+   ```php
+   public static function checkLoginAttempts()
+    {
 
-        Superadmin: acceso completo a todas las operaciones CRUD.
+        // Inicializamos contador y marca temporal si no existen
+        if (!isset($_SESSION['login_attempts'])) {
+            $_SESSION['login_attempts'] = 0;
+            $_SESSION['first_attempt'] = time();
+        }
 
-        Teamleader: puede añadir y modificar tareas.
+        // Si alcanzamos el número máximo de intentos, comprobamos el tiempo de bloqueo
+        if ($_SESSION['login_attempts'] >= self::MAX_LOGIN_ATTEMPTS) {
+            $time_passed = time() - $_SESSION['first_attempt'];
+            if ($time_passed < self::LOCKOUT_TIME) {
+                // Calculamos minutos restantes y devolvemos el estado bloqueado
+                $blocked_time = ceil((self::LOCKOUT_TIME - $time_passed) / 60);
+                return [
+                    'blocked' => true,
+                    'message' => "Demasiados intentos. Espere {$blocked_time} minutos e inténtelo de nuevo",
+                    'blocked_time' => $blocked_time
+                ];
+            } else {
+                // Se ha cumplido el periodo de bloqueo: reseteamos para permitir nuevos intentos
+                self::resetLoginAttempts();
+            }
+        }
 
-        Software Engineer: puede modificar el estado de las tareas.
+        // No bloqueado: devolvemos valores por defecto
+        return [
+            'blocked' => false,
+            'message' => "",
+            'blocked_time' => 0
+        ];
+    ``` 
+## Flujo del servidor
+El flujo del sitio está totalmente definido por 3 elementos:
+- index.php: Es el enrutador, el que establece los 2 controladores y el que indica que acciones pueden y deben hacer cada uno de ellos. También es aquí donde empieza la sesión
+- AuthController: Se encarga de tareas relacionadas con el registro  de usuarios e inicio de sesión. También muestra la vista de ``Profile``.
+- DashboardController: Es el que realiza las operaciones ``CRUD``.
 
-        Lectura: todos los roles pueden realizar SELECT en todas las tablas.
+  ```mermaid
+  flowchart TD
+    A[Index.php] --> B[AuthController]
+    B -->|Credenciales válidas| A
+    B -->|Credenciales inválidas| F[Mensaje de error]
 
-Uso básico
+  A --> C[DashboardController]
+    F-->B
+    B-->A 
 
-    Registro: crear cuenta pública o que el admin cree usuarios con roles superiores.
+    C --> D[Crear / Editar / Borrar / Leer]
+    D --> C
 
-    Login: acceder al panel según rol.
+    C --> A
+  ```
 
-    Superadmin: gestionar usuarios, equipos, proyectos y tareas.
-
-    Teamleader: crear y editar tareas, asignar miembros.
-
-    Software Engineer: actualizar estado de tareas.
-
-    Mi perfil: editar datos personales y cambiar contraseña.
-
-Seguridad recomendada
-
-    Hashear contraseñas con password_hash y verificar con password_verify.
-
-    Usar consultas preparadas para evitar inyección SQL.
-
-    Sanitizar y validar todas las entradas del usuario.
-
-    Proteger archivos sensibles y no exponer .env en producción.
-
-    Configurar HTTPS en entornos de producción.
-
-Tests
-
-No hay tests automatizados incluidos actualmente. Se recomienda añadir PHPUnit para pruebas unitarias y de integración.
-Buenas prácticas sugeridas
-
-    Implementar middleware de autorización para centralizar permisos.
-
-    Añadir paginación y filtros en listados grandes.
-
-    Crear seeders para datos de ejemplo reproducibles.
-
-    Añadir registro de auditoría para cambios críticos.
-
-    Implementar API REST si se requiere integración externa.
-
-Roadmap
-
-    Añadir tests automatizados con PHPUnit.
-
-    Mejorar sistema de permisos con middleware.
-
-    Implementar notificaciones por email para asignaciones y cambios de estado.
-
-    Añadir paginación, búsqueda y filtros avanzados.
-
-    Crear una API REST y documentación OpenAPI.
-
-Contribuciones
-
-    Abrir un issue describiendo el bug o la mejora.
-
-    Crear una branch con prefijo feature/ o fix/.
-
-    Hacer pull request con descripción clara de los cambios.
-
-    Mantener estilo de código y documentar cambios en la base de datos.
-
-Licencia
-
-Añade aquí la licencia del proyecto (por ejemplo MIT o GPL-3.0). Si no hay licencia, considera añadir una para aclarar el uso y contribución.
-Badges recomendados
-
-    Build (CI)
-
-    Coverage (cuando haya tests)
-
-    License
