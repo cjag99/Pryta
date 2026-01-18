@@ -23,13 +23,13 @@ Pryta permite registrar usuarios, crear equipos, asignar proyectos a equipos y g
     
 ## Requisitos
 
-  PHP 8.2 con extensiones PDO o mysqli.
+ - PHP 8.2 con extensiones PDO o mysqli.
 
-  MySQL 8.
+  - MySQL 8.
 
-  Apache (XAMPP recomendado para desarrollo).
+  - Apache (XAMPP recomendado para desarrollo).
 
-  Navegador moderno.
+
 
 ## Instalación y ejecución local
 
@@ -140,7 +140,7 @@ classDiagram
   - Register: Registro de usuarios nuevos con permisos mínimos.
     ![Register](public/images/register.jpg)
   - Home: Es la vista inicial del panel de administración. A través del menú desplegable lateral se puede acceder a las listas de las tablas.
-    ![Home](public/images/home.jpg)
+ ![Home](public/images/home.jpg)
   - List: Es la vista que crea una tabla que se rellena dinámicamente para cada tabla de la base de datos. Contiene botones que abren modales para los distintos formularios de las operaciones ``CRUD``.
     ![List](public/images/list.jpg)
   - Profile: Es la vista que muestra la información del usuario logueado, así como un pequeño formulario para actualizar su información personal.
