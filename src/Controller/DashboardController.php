@@ -382,14 +382,20 @@ class DashboardController
                     break;
                 case $currentRecord instanceof Task:
                     try {
-                        $currentRecord->setName(ValidationService::sanitizeInput($_POST['update_name']));
+                        if (isset($_POST['update_name'])) {
+
+                            $currentRecord->setName(ValidationService::sanitizeInput($_POST['update_name']));
+                        }
                         $currentRecord->setDescription(
                             isset($_POST['update_description']) && $_POST['update_description'] !== ''
                                 ? ValidationService::sanitizeInput($_POST['update_description'])
                                 : null
                         );
                         $currentRecord->setState(ValidationService::sanitizeInput($_POST['update_state']));
-                        $currentRecord->setProjectId((int) ValidationService::sanitizeInput($_POST['update_project_id']));
+                        if (isset($_POST['update_project_id'])) {
+
+                            $currentRecord->setProjectId((int) ValidationService::sanitizeInput($_POST['update_project_id']));
+                        }
                         $currentRecord->setStartedOn(
                             isset($_POST['update_started_on']) && $_POST['update_started_on'] !== ''
                                 ? new DateTimeImmutable(ValidationService::sanitizeInput($_POST['update_started_on']))
