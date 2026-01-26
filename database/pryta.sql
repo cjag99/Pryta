@@ -227,12 +227,12 @@ CREATE USER IF NOT EXISTS 'superadmin'@'localhost' IDENTIFIED BY 'pryta_admin123
 CREATE USER IF NOT EXISTS 'developer'@'localhost' IDENTIFIED BY 'pryta_develop123';
 
 -- Dar permisos
-GRANT USAGE ON pryta.* TO 'teamleader'@'localhost';
+GRANT USAGE,SELECT ON pryta.* TO 'teamleader'@'localhost';
 GRANT SELECT,INSERT, UPDATE ON pryta.task TO 'teamleader'@'localhost';
 
 GRANT ALL PRIVILEGES ON pryta.* TO 'superadmin'@'localhost';
 
-GRANT USAGE ON pryta.* TO 'developer'@'localhost';
+GRANT USAGE, SELECT ON pryta.* TO 'developer'@'localhost';
 GRANT SELECT on pryta.* TO 'developer'@'localhost';
 GRANT UPDATE ON pryta.task TO 'developer'@'localhost';
 
