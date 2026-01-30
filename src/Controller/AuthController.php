@@ -33,6 +33,11 @@ class AuthController
      */
     public function login()
     {
+        $message = isset($_COOKIE['flash_message']) ? $_COOKIE['flash_message'] : null;
+        if ($message) {
+            setcookie('flash_message', '', time() - 3600, '/'); // Eliminar cookie
+            $_SESSION['ERROR'] = $message;
+        }
         include "./src/Views/Auth/login.php";
     }
 
@@ -121,8 +126,15 @@ class AuthController
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+        setcookie(
+            'flash_message',
+            $_SESSION['ERROR'] ?? 'Has cerrado sesión correctamente.',
+            time() + 5,
+            '/'
+        );
 
         session_unset(); // Destruir todas las variables de sesión
+
         $params = session_get_cookie_params(); // Obtener parámetros de la cookie de sesión
         // Destruir la cookie de sesión
         setcookie(
@@ -138,6 +150,7 @@ class AuthController
             ]
         );
         session_destroy(); // Destruir la sesión
+
         header('Location: index.php?controller=auth&action=login'); // Redirigir al login
         exit();
     }

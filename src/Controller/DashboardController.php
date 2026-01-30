@@ -65,7 +65,7 @@ class DashboardController
 
         if (!$table_name || !array_key_exists($table_name, $allowed_tables)) {
             $_SESSION['error'] = "<strong>ERROR:</strong> La tabla seleccionada no existe.";
-            header("Location: index.php?controller=auth&action=login");
+            header("Location: index.php?controller=auth&action=logout");
             exit;
         }
 
@@ -81,7 +81,7 @@ class DashboardController
         $auxiliar_data = $this->launchAuxiliars($_SESSION['current_table'])[1];
         if (empty($data) && $_SESSION['current_table'] === 'user') {
             $_SESSION['error'] = "<strong>ERROR:</strong> No hay usuarios registrados en el sistema.";
-            header("Location: index.php?controller=auth&action=login");
+            header("Location: index.php?controller=auth&action=logout");
             exit();
         } else {
             require "./src/Views/Dashboard/list.php";
@@ -105,7 +105,7 @@ class DashboardController
             // Validar token CSRF
             if (!CSRFService::validateCSRFToken()) {
                 $_SESSION['ERROR'] = "<strong>ERROR:</strong> Token CSRF inválido.";
-                header("Location: index.php?controller=auth&action=login");
+                header("Location: index.php?controller=auth&action=logout");
                 exit;
             }
             $repository = match ($_SESSION['current_table']) {
@@ -147,7 +147,7 @@ class DashboardController
                         $repository->create($user);
                     } catch (PDOException $e) {
                         $_SESSION['ERROR'] = "<strong>ERROR:</strong> Permisos insuficientes.";
-                        header("Location: index.php?controller=auth&action=login");
+                        header("Location: index.php?controller=auth&action=logout");
                         exit;
                     }
                     $_SESSION['current_table'] = 'user';
@@ -166,7 +166,7 @@ class DashboardController
                         $repository->create($team);
                     } catch (PDOException $e) {
                         $_SESSION['ERROR'] = "<strong>ERROR:</strong> Permisos insuficientes.";
-                        header("Location: index.php?controller=auth&action=login");
+                        header("Location: index.php?controller=auth&action=logout");
                         exit;
                     }
                     $_SESSION['current_table'] = 'team';
@@ -195,7 +195,7 @@ class DashboardController
                         $repository->create($project);
                     } catch (PDOException $e) {
                         $_SESSION['ERROR'] = "<strong>ERROR:</strong> Permisos insuficientes.";
-                        header("Location: index.php?controller=auth&action=login");
+                        header("Location: index.php?controller=auth&action=logout");
                         exit;
                     }
                     $_SESSION['current_table'] = 'project';
@@ -224,14 +224,14 @@ class DashboardController
                         $repository->create($task);
                     } catch (PDOException $e) {
                         $_SESSION['ERROR'] = "<strong>ERROR:</strong> Permisos insuficientes.";
-                        header("Location: index.php?controller=auth&action=login");
+                        header("Location: index.php?controller=auth&action=logout");
                         exit;
                     }
                     $_SESSION['current_table'] = 'task';
                     break;
                 default:
                     $_SESSION['ERROR'] = "<strong>ERROR:</strong> No se ha podido crear el registro. Acceso denegado.";
-                    header("Location: index.php?controller=auth&action=login");
+                    header("Location: index.php?controller=auth&action=logout");
                     exit;
             }
             $_SESSION['SUCCESS'] = "<strong>EXITO:</strong> Registro creado correctamente.";
@@ -239,7 +239,7 @@ class DashboardController
             exit;
         } else {
             $_SESSION['ERROR'] = "<strong>ERROR:</strong> No se ha podido crear el registro. Acceso denegado.";
-            header("Location: index.php?controller=auth&action=login");
+            header("Location: index.php?controller=auth&action=logout");
             exit;
         }
     }
@@ -260,7 +260,7 @@ class DashboardController
             // Validar token CSRF
             if (!CSRFService::validateCSRFToken()) {
                 $_SESSION['ERROR'] = "<strong>ERROR:</strong> Token CSRF inválido.";
-                header("Location: index.php?controller=auth&action=login"); // Reenviar a index
+                header("Location: index.php?controller=auth&action=logout"); // Reenviar a logout
                 exit;
             }
             $repository = match ($_SESSION['current_table']) {
@@ -312,7 +312,7 @@ class DashboardController
                         return;
                     } catch (PDOException $e2) {
                         $_SESSION['ERROR'] = "<strong>ERROR:</strong> Permisos insuficientes.";
-                        header("Location: index.php?controller=auth&action=login");
+                        header("Location: index.php?controller=auth&action=logout");
                         exit;
                     }
                     break;
@@ -342,7 +342,7 @@ class DashboardController
                         return;
                     } catch (PDOException $e2) {
                         $_SESSION['ERROR'] = "<strong>ERROR:</strong> Permisos insuficientes.";
-                        header("Location: index.php?controller=auth&action=login");
+                        header("Location: index.php?controller=auth&action=logout");
                         exit;
                     }
                     break;
@@ -376,7 +376,7 @@ class DashboardController
                         return;
                     } catch (PDOException $e2) {
                         $_SESSION['ERROR'] = "<strong>ERROR:</strong> Permisos insuficientes.";
-                        header("Location: index.php?controller=auth&action=login");
+                        header("Location: index.php?controller=auth&action=logout");
                         exit;
                     }
                     break;
@@ -418,7 +418,7 @@ class DashboardController
                         return;
                     } catch (PDOException $e2) {
                         $_SESSION['ERROR'] = "<strong>ERROR:</strong> Permisos insuficientes.";
-                        header("Location: index.php?controller=auth&action=login");
+                        header("Location: index.php?controller=auth&action=logout");
                         exit;
                     }
                     break;
@@ -448,7 +448,7 @@ class DashboardController
             // Validar token CSRF
             if (!CSRFService::validateCSRFToken()) {
                 $_SESSION['ERROR'] = "<strong>ERROR:</strong> Token CSRF inválido.";
-                header("Location: index.php?controller=auth&action=login"); // Reenviar a index y destruir sesion
+                header("Location: index.php?controller=auth&action=logout"); // Reenviar a logout y destruir sesion
                 exit;
             }
             $repository = match ($_SESSION['current_table']) {
@@ -461,7 +461,7 @@ class DashboardController
                 $repository->delete((int)ValidationService::sanitizeInput($_POST['id']));
             } catch (PDOException $e) {
                 $_SESSION['ERROR'] = "<strong>ERROR:</strong> Permisos insuficientes.";
-                header("Location: index.php?controller=auth&action=login");
+                header("Location: index.php?controller=auth&action=logout");
                 exit;
             }
             $_SESSION['SUCCESS'] = "<strong>EXITO:</strong> Operación realizada correctamente.";
